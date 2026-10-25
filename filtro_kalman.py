@@ -1,16 +1,17 @@
 """
-(Persona 3: estimación con filtro de Kalman)
+filtro_kalman.py  (Persona 3: estimación con filtro de Kalman)
 
+Usa modelo_euler.py de la Persona 1. Debe estar en la misma carpeta.
 
 Estado:        x_k = (p_k, D_k)   (precio y demanda)
 Dinámica:      x_k = F x_{k-1} + B u_k + w_k,   w_k ~ N(0, Q)
 Observación:   y_k = H x_k + v_k,               v_k ~ N(0, R)
+
 """
 
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from filterpy.kalman import KalmanFilter
 
 from modelo_euler import simular, matriz_F, termino_entrada, PARAMS_BASE
 
@@ -53,75 +54,92 @@ def generar_mediciones_ruidosas(simulacion,
     matriz_R = np.diag(desviaciones_medicion ** 2)
     return mediciones, matriz_H, matriz_R
 
-
 # ----------------------------------------------------------------------
-# 2. Construcción y ejecución del filtro
+# 2. Filtro de Kalman escrito a mano
 # ----------------------------------------------------------------------
-def construir_filtro_kalman(parametros, desviacion_choque_demanda,
-                            matriz_H, matriz_R,
-                            estado_inicial, incertidumbre_inicial=25.0,
-                            factor_escala_q=1.0, factor_escala_r=1.0):
-
-    cantidad_variables_medidas = matriz_H.shape[0]
-    filtro = KalmanFilter(dim_x=2, dim_z=cantidad_variables_medidas)
-
-    filtro.x = np.array(estado_inicial, dtype=float).reshape(2, 1)
-    filtro.P = incertidumbre_inicial * np.eye(2)
-    filtro.F = matriz_F(parametros)
-    filtro.B = np.eye(2)          # la entrada u_k ya trae el término constante
-    filtro.H = matriz_H
-    filtro.Q = factor_escala_q * np.diag(
+def construir_matriz_Q(desviacion_choque_demanda, factor_escala_q=1.0):
+    return factor_escala_q * np.diag(
         [1e-4, desviacion_choque_demanda ** 2 + 1e-4])
-    filtro.R = factor_escala_r * matriz_R
-    return filtro
 
+def predecir_estado(estado_anterior, covarianza_anterior, matriz_F_transicion, entrada_constante, matriz_Q):
+    estado_predicho = matriz_F_transicion @ estado_anterior + entrada_constante
+    covarianza_predicha = (matriz_F_transicion @ covarianza_anterior
+                           @ matriz_F_transicion.T + matriz_Q)
+    return estado_predicho, covarianza_predicha
 
-def ejecutar_filtro_kalman(simulacion, mediciones, matriz_H, matriz_R,
-                           desviacion_choque_demanda,
-                           estado_inicial=None, incertidumbre_inicial=25.0,
-                           factor_escala_q=1.0, factor_escala_r=1.0):
+def calcular_ganancia_kalman(covarianza_predicha, matriz_H, matriz_R):
+    covarianza_de_la_innovacion = (matriz_H @ covarianza_predicha
+                                   @ matriz_H.T + matriz_R)
+    return (covarianza_predicha @ matriz_H.T
+            @ np.linalg.inv(covarianza_de_la_innovacion))
+
+def corregir_estado(estado_predicho, covarianza_predicha, medicion,
+                    matriz_H, matriz_R):
+    """
+        x = x_pred + K (y - H x_pred)
+        P = (I - K H) P_pred
+    """
+    ganancia = calcular_ganancia_kalman(covarianza_predicha, matriz_H, matriz_R)
+    innovacion = medicion - matriz_H @ estado_predicho
+    estado_corregido = estado_predicho + ganancia @ innovacion
+
+    identidad = np.eye(len(estado_predicho))
+    covarianza_corregida = (identidad - ganancia @ matriz_H) @ covarianza_predicha
+    # Se simetriza para evitar que errores de redondeo la desbalanceen
+    covarianza_corregida = 0.5 * (covarianza_corregida + covarianza_corregida.T)
+    return estado_corregido, covarianza_corregida, ganancia
+
+def ejecutar_filtro_kalman(simulacion, mediciones, matriz_H, matriz_R, desviacion_choque_demanda,
+                           estado_inicial=None, incertidumbre_inicial=25.0, factor_escala_q=1.0, factor_escala_r=1.0):
 
     parametros = simulacion["par"]
     cantidad_pasos = len(simulacion["p"])
+    cantidad_mediciones = matriz_H.shape[0]
 
     if estado_inicial is None:
         estado_inicial = [parametros["p0"] + 5.0, simulacion["D"][0] - 20.0]
 
-    filtro = construir_filtro_kalman(
-        parametros, desviacion_choque_demanda, matriz_H, matriz_R,
-        estado_inicial, incertidumbre_inicial,
-        factor_escala_q, factor_escala_r)
+    matriz_F_transicion = matriz_F(parametros)
+    matriz_Q = construir_matriz_Q(desviacion_choque_demanda, factor_escala_q)
+    matriz_R_escalada = factor_escala_r * matriz_R
+
+    estado_actual = np.array(estado_inicial, dtype=float)
+    covarianza_actual = incertidumbre_inicial * np.eye(2)
 
     estimaciones = np.zeros((cantidad_pasos, 2))
     covarianzas = np.zeros((cantidad_pasos, 2, 2))
+    ganancias = np.zeros((cantidad_pasos, 2, cantidad_mediciones))
 
     for k in range(cantidad_pasos):
         if k > 0:
+            # Término constante: usa S0 del paso anterior y D0 del paso actual
             entrada_constante = termino_entrada(
                 parametros,
                 D0=simulacion["D0"][k],
-                S0=simulacion["S0"][k - 1]).reshape(2, 1)
-            filtro.predict(u=entrada_constante)
-        filtro.update(mediciones[k])
+                S0=simulacion["S0"][k - 1])
+            estado_actual, covarianza_actual = predecir_estado(
+                estado_actual, covarianza_actual,
+                matriz_F_transicion, entrada_constante, matriz_Q)
 
-        estimaciones[k] = filtro.x.flatten()
-        covarianzas[k] = filtro.P
+        estado_actual, covarianza_actual, ganancia = corregir_estado(
+            estado_actual, covarianza_actual, mediciones[k],
+            matriz_H, matriz_R_escalada)
+
+        estimaciones[k] = estado_actual
+        covarianzas[k] = covarianza_actual
+        ganancias[k] = ganancia
 
     desviaciones = np.sqrt(np.stack(
         [covarianzas[:, 0, 0], covarianzas[:, 1, 1]], axis=1))
     return {"estimaciones": estimaciones,
             "covarianzas": covarianzas,
-            "desviaciones": desviaciones}
-
+            "desviaciones": desviaciones,
+            "ganancias": ganancias}
 
 def ejecutar_caso_completo(semilla=0,
-                           desviacion_choque_demanda=3.0,
-                           desviacion_medicion_precio=0.5,
-                           desviacion_medicion_demanda=3.0,
-                           solo_precio=False,
-                           D0=50.0, S0=50.0, parametros=None,
-                           indices_valores_atipicos=None,
-                           estado_inicial=None, incertidumbre_inicial=25.0,
+                           desviacion_choque_demanda=3.0, desviacion_medicion_precio=0.5, desviacion_medicion_demanda=3.0,
+                           solo_precio=False, D0=50.0, S0=50.0, parametros=None,
+                           indices_valores_atipicos=None, estado_inicial=None, incertidumbre_inicial=25.0,
                            factor_escala_q=1.0, factor_escala_r=1.0):
 
     simulacion = simular(parametros, D0=D0, S0=S0,
@@ -138,13 +156,11 @@ def ejecutar_caso_completo(semilla=0,
             "desviacion_choque_demanda": desviacion_choque_demanda,
             "solo_precio": solo_precio, "resultado": resultado}
 
-
 # ----------------------------------------------------------------------
 # 3. Métricas de desempeño
 # ----------------------------------------------------------------------
 def calcular_raiz_error_cuadratico_medio(valores_verdaderos, valores_estimados):
     return float(np.sqrt(np.mean((valores_verdaderos - valores_estimados) ** 2)))
-
 
 def calcular_errores_estimacion(simulacion, resultado):
     return {
@@ -154,7 +170,6 @@ def calcular_errores_estimacion(simulacion, resultado):
             simulacion["D"], resultado["estimaciones"][:, 1]),
     }
 
-
 def calcular_cobertura_intervalos(simulacion, resultado, numero_desviaciones=2.0):
     valores_verdaderos = np.column_stack([simulacion["p"], simulacion["D"]])
     error_absoluto = np.abs(valores_verdaderos - resultado["estimaciones"])
@@ -163,9 +178,7 @@ def calcular_cobertura_intervalos(simulacion, resultado, numero_desviaciones=2.0
     return {"cobertura_precio": float(dentro_del_intervalo[:, 0].mean()),
             "cobertura_demanda": float(dentro_del_intervalo[:, 1].mean())}
 
-
-def calcular_tiempo_convergencia(simulacion, resultado,
-                                 tolerancia_error_precio=1.0):
+def calcular_tiempo_convergencia(simulacion, resultado, tolerancia_error_precio=1.0):
     error_precio = np.abs(simulacion["p"] - resultado["estimaciones"][:, 0])
     pasos_fuera_de_tolerancia = error_precio > tolerancia_error_precio
     if not pasos_fuera_de_tolerancia.any():
@@ -175,7 +188,6 @@ def calcular_tiempo_convergencia(simulacion, resultado,
     ultimo_paso_fuera = np.where(pasos_fuera_de_tolerancia)[0][-1]
     return float(simulacion["t"][ultimo_paso_fuera + 1])
 
-
 def resumir_desempeno(simulacion, resultado):
     resumen = {}
     resumen.update(calcular_errores_estimacion(simulacion, resultado))
@@ -184,14 +196,10 @@ def resumir_desempeno(simulacion, resultado):
         simulacion, resultado)
     return resumen
 
-
 # ----------------------------------------------------------------------
 # 4. Experimentos pedidos en el documento
 # ----------------------------------------------------------------------
-def experimento_calibracion_q_r(caso,
-                                factores_escala_q=(0.01, 1.0, 100.0),
-                                factores_escala_r=(0.01, 1.0, 100.0)):
-    
+def experimento_calibracion_q_r(caso, factores_escala_q=(0.01, 1.0, 100.0), factores_escala_r=(0.01, 1.0, 100.0)):
     filas = []
     for factor_q in factores_escala_q:
         for factor_r in factores_escala_r:
@@ -207,28 +215,20 @@ def experimento_calibracion_q_r(caso,
 
 
 def repetir_experimento(numero_realizaciones=50, **argumentos_caso):
-    
     filas = []
     for semilla in range(numero_realizaciones):
         caso = ejecutar_caso_completo(semilla=semilla, **argumentos_caso)
         filas.append(resumir_desempeno(caso["simulacion"], caso["resultado"]))
     return pd.DataFrame(filas)
 
-
 def experimento_valor_informacion(numero_realizaciones=50, **argumentos_caso):
-    
     solo_precio = repetir_experimento(
         numero_realizaciones, solo_precio=True, **argumentos_caso)
     precio_y_demanda = repetir_experimento(
         numero_realizaciones, solo_precio=False, **argumentos_caso)
-    return pd.DataFrame({"solo_precio": solo_precio.mean(),
-                         "precio_y_demanda": precio_y_demanda.mean()})
+    return pd.DataFrame({"solo_precio": solo_precio.mean(), "precio_y_demanda": precio_y_demanda.mean()})
 
-
-def experimento_valores_atipicos(numero_realizaciones=50,
-                                 indices_valores_atipicos=(20, 21, 40),
-                                 **argumentos_caso):
-    
+def experimento_valores_atipicos(numero_realizaciones=50, indices_valores_atipicos=(20, 21, 40), **argumentos_caso):
     sin_atipicos = repetir_experimento(numero_realizaciones, **argumentos_caso)
     con_atipicos = repetir_experimento(
         numero_realizaciones,
@@ -237,12 +237,10 @@ def experimento_valores_atipicos(numero_realizaciones=50,
     return pd.DataFrame({"sin_atipicos": sin_atipicos.mean(),
                          "con_atipicos": con_atipicos.mean()})
 
-
 # ----------------------------------------------------------------------
 # 5. Gráficas y exportación
 # ----------------------------------------------------------------------
-def graficar_estimacion(caso, titulo="Estimación con filtro de Kalman",
-                        numero_desviaciones=2.0, ruta_guardado=None):
+def graficar_estimacion(caso, titulo="Estimación con filtro de Kalman", numero_desviaciones=2.0, ruta_guardado=None):
     simulacion = caso["simulacion"]
     mediciones = caso["mediciones"]
     resultado = caso["resultado"]
@@ -274,9 +272,7 @@ def graficar_estimacion(caso, titulo="Estimación con filtro de Kalman",
         plt.savefig(ruta_guardado, dpi=150)
     plt.show()
 
-
 def exportar_estimaciones_csv(caso, ruta_archivo="estimaciones_kalman.csv", numero_desviaciones=2.0):
-
     simulacion = caso["simulacion"]
     resultado = caso["resultado"]
     estimaciones = resultado["estimaciones"]
@@ -293,7 +289,6 @@ def exportar_estimaciones_csv(caso, ruta_archivo="estimaciones_kalman.csv", nume
     })
     tabla.to_csv(ruta_archivo, index=False)
     return tabla
-
 
 # ----------------------------------------------------------------------
 # Demostración (Escenario A)
