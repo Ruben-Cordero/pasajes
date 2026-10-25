@@ -45,8 +45,8 @@ Cada integrante anota, en pocas líneas, qué aprendió de las **otras tres** ca
 - Escenarios y decisión:
 
 ### Persona 4 (decisión y datos)
-- Modelo de Euler:
-- Red bayesiana:
-- Filtro de Kalman:
+- Modelo de Euler: el precio sube cuando falta oferta y baja cuando sobra, con la ecuación p_{k+1} = p_k + Δt·α·(D_k − S_k). Igualando demanda y oferta sale el precio de equilibrio p* = (D0 − S0 + β·p_ref + γ·p_costo)/(β + γ), que da 7,86 Bs en el Escenario A. Aprendí a leer la estabilidad con r = 1 − Δt·α·(β + γ): con los valores del documento r = −0,75, así que el sistema es estable pero oscila. Por eso el Escenario A converge oscilando desde p0 = 10 y no "permanece estable". Esa oscilación también explicó un problema de mi regla de decisión: cambiar de acción a cada rato generaba transitorios, y por eso agregué una permanencia mínima de 30 min. También vi que con datos observados una regresión simple no recupera α, β y γ (pregunta 2, identificabilidad), así que usé los valores nominales.
+- Red bayesiana: entendí cómo se calcula P(escasez | contexto) multiplicando las tablas y normalizando, y cómo `traduccion.py` convierte las categorías baja/media/alta en los D0 y S0 que necesita Euler. Al calibrarla con los datos aprendí dos cosas. Primero, la escasez D > S casi no depende del contexto porque el precio equilibra el mercado, así que usé `tarifa_alta` como indicador. Segundo, hay que discretizar la demanda a precio de referencia y no las solicitudes crudas. Además, con solo tres niveles la red se satura en contextos extremos, como el viernes 19:00 con lluvia y evento (P(escasez) = 0,69).
+- Filtro de Kalman: el filtro combina lo que predice el modelo con lo que se mide, según cuánto confía en cada uno (Q y R). Con datos reales no hay valor verdadero, así que el filtro se evalúa con el error de predicción a un paso y con las innovaciones (NIS ≈ número de mediciones). En el Escenario E el filtro solo funcionó bien cuando le pasé el D0 y S0 del contexto que da la red: el error bajó de 4,7 a 1,5 Bs. Medir las solicitudes además del precio mejora la estimación, que es el valor de la información (pregunta 5). Para la decisión uso el límite inferior del intervalo de credibilidad, para estar seguro de que el precio ya es alto antes de incentivar.
 
 
