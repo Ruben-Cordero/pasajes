@@ -1,0 +1,31 @@
+entradas_D0_S0,mediciones,factor_q,rmse_prediccion_1paso_precio,sesgo_innovacion_precio,NIS_medio,NIS_esperado,cobertura_prediccion_precio_2sd
+nominal (D0=S0=50),solo precio,0.1,4.181,2.5669,77.1415,1,0.3326
+nominal (D0=S0=50),solo precio,1.0,5.2047,3.2197,54.619,1,0.4137
+nominal (D0=S0=50),solo precio,10.0,6.297,3.9071,14.2694,1,0.5893
+nominal (D0=S0=50),solo precio,30.0,6.4882,4.0273,5.4066,1,0.6622
+nominal (D0=S0=50),solo precio,100.0,6.5647,4.0754,1.7054,1,0.869
+nominal (D0=S0=50),precio + solicitudes,0.1,4.1331,2.5503,79.2291,2,0.3356
+nominal (D0=S0=50),precio + solicitudes,1.0,4.6986,2.9817,56.1677,2,0.4219
+nominal (D0=S0=50),precio + solicitudes,10.0,3.7673,2.5995,17.0003,2,0.5372
+nominal (D0=S0=50),precio + solicitudes,30.0,3.0757,2.193,8.7228,2,0.6057
+nominal (D0=S0=50),precio + solicitudes,100.0,2.7255,1.9476,5.286,2,0.6696
+contexto red experta,solo precio,0.1,2.4732,0.6357,26.9765,1,0.3624
+contexto red experta,solo precio,1.0,3.0181,0.799,18.36,1,0.4382
+contexto red experta,solo precio,10.0,3.6242,0.9711,4.7261,1,0.6927
+contexto red experta,solo precio,30.0,3.7309,1.0012,1.7878,1,0.9152
+contexto red experta,solo precio,100.0,3.7736,1.0133,0.5638,1,0.9673
+contexto red experta,precio + solicitudes,0.1,2.4361,0.6324,28.64,2,0.3705
+contexto red experta,precio + solicitudes,1.0,2.6969,0.7443,19.5859,2,0.4576
+contexto red experta,precio + solicitudes,10.0,2.1415,0.6636,6.0921,2,0.7537
+contexto red experta,precio + solicitudes,30.0,1.8286,0.569,3.2944,2,0.8475
+contexto red experta,precio + solicitudes,100.0,1.7166,0.5115,2.1343,2,0.8765
+contexto red calibrada,solo precio,0.1,1.9111,0.0525,16.0992,1,0.5714
+contexto red calibrada,solo precio,1.0,2.1918,0.0661,9.6776,1,0.6875
+contexto red calibrada,solo precio,10.0,2.5629,0.0808,2.3627,1,0.9077
+contexto red calibrada,solo precio,30.0,2.6296,0.0833,0.8882,1,0.9621
+contexto red calibrada,solo precio,100.0,2.6564,0.0844,0.2798,1,0.9829
+contexto red calibrada,precio + solicitudes,0.1,1.8709,0.0522,17.8185,2,0.5744
+contexto red calibrada,precio + solicitudes,1.0,1.9457,0.062,10.8854,2,0.6979
+contexto red calibrada,precio + solicitudes,10.0,1.5811,0.0563,3.534,2,0.9025
+contexto red calibrada,precio + solicitudes,30.0,1.4673,0.0487,2.1108,2,0.9159
+contexto red calibrada,precio + solicitudes,100.0,1.4685,0.0441,1.5247,2,0.9226

@@ -1,0 +1,11 @@
+tipo,variable,corte_1,corte_2,valor_calibrado,valor_anterior
+crudo,solicitudes,52.0,56.0,,
+crudo,vehiculos,52.0,56.0,,
+propuesto,D0_hat,50.0,58.0,,
+propuesto,S0_hat,45.5,48.0,,
+VALORES_D0,baja,,,47.0,47.0
+VALORES_S0,baja,,,43.0,43.0
+VALORES_D0,media,,,54.0,54.0
+VALORES_S0,media,,,47.0,47.0
+VALORES_D0,alta,,,65.0,65.0
+VALORES_S0,alta,,,50.0,50.0
