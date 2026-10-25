@@ -28,7 +28,7 @@ datos/
 │   └── cotizaciones_indrive.csv
 ├── procesado/
 │   └── escenario_e.csv
-└── capturas/                # para las capturas reales cuando se recolecten
+└── capturas/                # (se crea al recolectar capturas reales; hoy no existe)
 ```
 
 Para regenerar todo: `python generar_sintetico.py` y luego `python preparar.py`. La semilla es fija, así que
@@ -145,11 +145,11 @@ Comprobaciones sobre `escenario_e.csv`:
 - **Euler (Persona 1).** `p_ref = 10`, `p_costo = 5`, Δt = 5 min. Para validar, se pueden comparar los precios medios por contexto con los equilibrios de la sección 5.
 - **Red bayesiana (Persona 2).**
   - Priors de lluvia: tabla de `lluvia_senamhi.csv` filtrada por `dias_con_lluvia`.
-  - Cortes de `discretizar()`: terciles de la sección 5.
+  - Cortes de `discretizar()`: los terciles crudos de la sección 5 casi no separan los contextos, así que se usaron los terciles de la demanda y la oferta a precio de referencia (D0_hat: 50 / 58; S0_hat: 45,5 / 48). Ver `resultados/tablas/E_separacion_discretizacion.csv`.
   - Tabla de traducción: ya calibrada en `capa2_bayes/traduccion.py` con estos datos (D0 = 47 / 54 / 65 y S0 = 43 / 47 / 50; detalle en `resultados/tablas/E_calibracion_traduccion.csv`). Los valores orientativos iniciales eran D0 ≈ 50 / 62 / 75 y S0 ≈ 48 / 44 / 38.
   - Frecuencias condicionales: ejecutar `preparar.py` e imprimir las tablas de P(tarifa_alta) y P(escasez) por contexto.
 - **Kalman (Persona 3).** Medir con `precio_bs` y `solicitudes`. Valores de ruido con los que se generaron los datos (sirven de referencia para calibrar Q y R):
-  R ≈ diag(0.18, 6.25) (error de precio incluye el redondeo) y Q ≈ diag(0.25, 1.0).
+  R ≈ diag(0.18, 6.25) (error de precio incluye el redondeo). Q se calibró con la prueba NIS y quedó en `construir_matriz_Q(1.0)` × 30, porque el filtro no conoce los cambios graduales de contexto (sección 3.4.4 del informe).
 - **Decisión (Persona 4).** Comparar el precio estimado con 13 Bs (`tarifa_alta`) y la probabilidad de escasez que entregue la red.
 
 ## 8. Texto sugerido para el informe

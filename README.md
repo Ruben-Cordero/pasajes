@@ -51,7 +51,7 @@ pasajes/
 │   └── decision.py               regla de decisión y barrido de X e Y (pregunta 7)
 │
 ├── datos/                        Escenario E (sintético) + clima de SENAMHI
-├── resultados/                   figuras/, tablas/ y pregunta7.md (todo generado)
+├── resultados/                   figuras/ y tablas/ (generadas), preguntas_abiertas.md y pregunta7.md
 ├── informe/                      generar_informe.py → informe.docx y presentacion.pptx
 └── equipo/
     └── bitacora.md               roles, revisión cruzada y bitácora de aprendizaje
@@ -107,6 +107,8 @@ Imprime D0, S0 y P(escasez) de la red, el p\* teórico, el precio estimado por K
 
 ## Qué parte del caso responde cada archivo
 
+Resumen de las 7 preguntas abiertas con sus números clave: [resultados/preguntas_abiertas.md](resultados/preguntas_abiertas.md).
+
 | Lo que pide el documento | Dónde está | Sección del informe |
 |---|---|---|
 | Escenarios A, B, C | `integracion/escenarios.py` | 3.1, 3.2 |
@@ -128,7 +130,7 @@ Imprime D0, S0 y P(escasez) de la red, el p\* teórico, el precio estimado por K
 |---|---|
 | Escenario A | p\* = 7,86 Bs. Arranca en p0 = 10 y **converge oscilando** (Δt·α·(β+γ) = 1,75 < 2, r = −0,75). Llega al equilibrio en 60 min. |
 | Escenarios B / C | p\* durante la ventana = 22,14 Bs (D0 = 100) y 13,57 Bs (S0 = 30) |
-| Pregunta 1 | α nominal a 14 % del límite de inestabilidad (α < 0,114); con α/2 llega al equilibrio en 10 min sin oscilar |
+| Pregunta 1 | Subir α un 14 % (hasta 0,114) vuelve inestable el precio; con α/2 llega al equilibrio en 10 min sin oscilar |
 | Pregunta 3 | Solo Q×1, R×1 da a la vez el menor error y ~95 % de cobertura; Q muy chico → lento, R muy chico → copia el ruido |
 | Pregunta 4 | Con umbral de tolerancia (18 Bs) el α nominal es inestable (precio salta 5 ↔ 35 Bs). Con α = 0,03, midiendo solo el precio: KF lineal 1,48 Bs de error, EKF 0,38, UKF 0,36 |
 | Pregunta 5 / Escenario D | Medir también las solicitudes baja el error RMS de la demanda de 3,99 a 2,19 |
@@ -140,6 +142,6 @@ Imprime D0, S0 y P(escasez) de la red, el p\* teórico, el precio estimado por K
 
 ## Notas para el equipo
 
-- **Pendiente antes de entregar:** completar los nombres de las Personas 1–3 en la portada (`informe/generar_informe.py`, función `construir`) y llenar [equipo/bitacora.md](equipo/bitacora.md).
+- **Pendiente antes de entregar:** llenar la revisión cruzada y la bitácora de aprendizaje en [equipo/bitacora.md](equipo/bitacora.md).
 - **capa2_bayes/traduccion.py:** lo único que se cambió de la lógica de otra persona son las constantes `VALORES_D0` y `VALORES_S0`, calibradas con los datos del Escenario E. Ahora son D0 = 47/54/65 y S0 = 43/47/50; antes eran 30/50/100 y 30/50/70. Los escenarios B (D0 = 100) y C (S0 = 30) siguen definidos en `integracion/params.py`.
 - **Reorganización por carpetas:** al mover los archivos solo se cambiaron las rutas de los `import`; `git log --follow <archivo>` conserva la autoría de cada uno.

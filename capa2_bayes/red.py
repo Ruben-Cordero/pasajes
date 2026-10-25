@@ -35,6 +35,9 @@ Cada lista debe sumar 1 (lo revisa validar_red()).
 Todas las probabilidades son SUPUESTOS EXPERTOS iniciales, cada uno con su
 justificacion. Las marcadas "PENDIENTE (Persona 4)" se reemplazan cuando
 haya datos reales, usando estimar_desde_datos() (al final del archivo).
+Con los datos SINTETICOS del Escenario E ya se hizo en
+integracion/escenario_e.py (red_calibrada()); estas tablas quedan como la
+red experta de referencia.
 """
 
 import math

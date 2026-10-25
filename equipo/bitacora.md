@@ -1,14 +1,14 @@
 # Bitácora del equipo
 
-El documento del caso (sección 8) pide revisión cruzada, rotación al exponer, repositorio con commits por autor, bitácora de aprendizaje y defensa oral individual, y el criterio de evaluación 7 revisa que haya evidencia de ello. Este archivo reúne esa evidencia; los commits por autor están en Git. **Cada integrante debe llenar su parte con lo que realmente hizo.**
+El documento del caso (sección 8) pide revisión cruzada, repositorio con commits por autor, bitácora de aprendizaje y defensa oral individual, y el criterio de evaluación 7 revisa que haya evidencia de ello. Este archivo reúne la revisión cruzada y la bitácora; los commits por autor están en Git. **Cada integrante debe llenar su parte con lo que realmente hizo.**
 
 ## Roles
 
 | Persona | Rol | Carpeta | Usuario de Git | Nombre |
 |---|---|---|---|---|
-| 1 | Coordinador/a de modelo (Euler) | `capa1_euler/` | lucianaaaaaaa | _completar_ |
-| 2 | Analista bayesiano/a | `capa2_bayes/` | alous12 | _completar_ |
-| 3 | Ingeniero/a de estimación (Kalman) | `capa3_kalman/` | Sarah Cazorla | _completar_ |
+| 1 | Coordinador/a de modelo (Euler) | `capa1_euler/` | lucianaaaaaaa | Luciana Leaño |
+| 2 | Analista bayesiano/a | `capa2_bayes/` | alous12 | Alejandro Machaca |
+| 3 | Ingeniero/a de estimación (Kalman) | `capa3_kalman/` | Sarah Cazorla | Sarah Cazorla |
 | 4 | Analista de decisiones y datos | `integracion/`, `datos/`, `informe/` | Rubén Cordero | Rubén Cordero |
 
 ## 1. Revisión cruzada

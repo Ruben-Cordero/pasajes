@@ -424,7 +424,7 @@ def construir(inf):
         "Los escenarios A, B y C se simulan durante 300 minutos con el modelo de Euler. B y C "
         "aplican la perturbación solo entre los minutos 60 y 180, de modo que se ve tanto la "
         "reacción como la recuperación (Figura 4). La Tabla 1 reúne las métricas "
-        "(resultados/tablas/metricas_escenarios.csv, generada por escenarios.py).")
+        "(resultados/tablas/metricas_escenarios.csv, generada por integracion/escenarios.py).")
     filas = []
     for e in "ABC":
         r = met.loc[e]
@@ -505,7 +505,7 @@ def construir(inf):
         "El Escenario E usa datos/procesado/escenario_e.csv: 1.351 intervalos de cinco minutos "
         "entre el lunes 26 de octubre y el domingo 1 de noviembre de 2026, de 06:00 a 22:00, en "
         "una ruta fija. Los datos son sintéticos (sección 4). El análisis está en "
-        "escenario_e.py.")
+        "integracion/escenario_e.py.")
 
     inf.titulo("3.4.1", "Frecuencias por contexto", 3)
     filas = []
@@ -585,7 +585,7 @@ def construir(inf):
         "Los valores anteriores (D0 alta = 100, S0 baja = 30) venían de los escenarios B y C del "
         "documento. Esos escenarios son choques más fuertes que cualquier contexto de los datos "
         "(D0_hat no supera 90 y S0_hat no baja de 34), por lo que B y C se siguen definiendo "
-        "directamente en params.py y no a partir de la tabla de traducción.")
+        "directamente en integracion/params.py y no a partir de la tabla de traducción.")
     filas = []
     for r in redes.itertuples():
         filas.append([("punta" if r.hora_punta else "valle") + (", lluvia" if r.lluvia else "")
@@ -646,7 +646,7 @@ def construir(inf):
 
     inf.titulo("3.5", "Monte Carlo de la red bayesiana al modelo de Euler", 2)
     inf.parrafo(
-        "Para llevar la incertidumbre del contexto al precio, montecarlo.py toma 500 pares (D0, "
+        "Para llevar la incertidumbre del contexto al precio, integracion/montecarlo.py toma 500 pares (D0, "
         "S0) de P(Demanda, Oferta | contexto) con muestrear_parametros() y corre simular() con "
         "cada uno. La Figura 8 muestra la mediana y los percentiles 5 y 95 del precio "
         "(resultados/tablas/montecarlo_bandas.csv) y la Tabla 9 el resumen "
@@ -733,7 +733,7 @@ def construir(inf):
         "precio ya supera Y» tenga 97,5 % de confianza: solo se renuncia a subir el precio, y "
         "se paga un bono, cuando es casi seguro que el precio ya es alto. Además, cada acción "
         f"se mantiene al menos {P.PERMANENCIA_MIN * 5} minutos antes de cambiar (sección 6.3). "
-        "La regla está en decision.py.")
+        "La regla está en integracion/decision.py.")
 
     inf.titulo("6.2", "Elección de X e Y", 2)
     inf.parrafo(
@@ -830,7 +830,7 @@ def construir(inf):
         "mediciones siguientes.",
         "**Recargo absorbido por el precio dinámico.** En el modelo lineal un recargo fijo baja "
         "el precio de mercado en la misma cantidad; solo el bono mueve el equilibrio.",
-        "**Montos del bono y del recargo supuestos** (2 Bs cada uno, params.py).",
+        "**Montos del bono y del recargo supuestos** (2 Bs cada uno, integracion/params.py).",
         "**Costos de operación no observados.** El nodo Costos de la red no se pudo calibrar.",
     ])
 
@@ -840,7 +840,7 @@ def construir(inf):
     inf.titulo("10.", "Conclusiones")
     inf.vinetas([
         "α es el parámetro más delicado: no cambia el precio de equilibrio, pero el valor "
-        "nominal está a un 14 % del límite de inestabilidad; con la mitad de α el precio llega "
+        "nominal está tan cerca del límite que subirlo un 14 % lo vuelve inestable; con la mitad de α el precio llega "
         "al equilibrio sin oscilar (pregunta 1).",
         "Con un umbral de tolerancia al precio, la demanda se vuelve mucho más sensible cerca "
         "del umbral y el α nominal hace oscilar el precio entre el piso y 35 Bs; el límite de "
@@ -898,6 +898,7 @@ def construir(inf):
                 gen = "integracion/escenarios.py"
             filas.append([f"resultados/{sub}/{f}", gen])
     filas.append(["resultados/pregunta7.md", "redactado a partir de integracion/decision.py"])
+    filas.append(["resultados/preguntas_abiertas.md", "resumen redactado de la sección 7"])
     inf.tabla("Archivos de resultados", ["Archivo", "Generado por"], filas)
 
     # ------------------------------------------------------------ Referencias
@@ -957,7 +958,8 @@ def preguntas_abiertas(inf, vi, ident, kal_fila, ganancia, X, Y):
     inf.parrafo(
         "El documento del caso plantea siete preguntas abiertas. Esta sección responde cada una "
         "con los resultados del sistema; las que ya se trataron en secciones anteriores se "
-        "resumen y se indica dónde está el detalle.")
+        "resumen y se indica dónde está el detalle. Un resumen de las siete respuestas, con "
+        "enlaces a sus tablas, está en resultados/preguntas_abiertas.md.")
 
     # 7.1 ------------------------------------------------------------------
     inf.titulo("7.1", "Pregunta 1: sensibilidad a α, β y γ", 2)
@@ -1310,7 +1312,7 @@ def presentacion():
     diapositiva("Monte Carlo Bayes → Euler", None, os.path.join(FIG, "montecarlo_bandas.png"))
     est = me.estabilidad(P.PARAMS)
     diapositiva("Pregunta 1: sensibilidad",
-                [f"α nominal a {pct(est['alpha_max'] / P.PARAMS['alpha'] - 1)} del límite de "
+                [f"Subir α un {pct(est['alpha_max'] / P.PARAMS['alpha'] - 1)} lo vuelve inestable: límite de "
                  f"estabilidad (α < {n(est['alpha_max'], 3)})",
                  "Con α/2: equilibrio en 10 min sin oscilar",
                  "β y γ mueven p* en sentidos opuestos; la dinámica depende de β + γ",
@@ -1360,8 +1362,9 @@ def comprobar_referencias(inf):
         for f in os.listdir(os.path.join(P.RESULTADOS, sub)):
             if f not in texto:
                 faltan.append(f"resultados/{sub}/{f}")
-    if "pregunta7.md" not in texto:
-        faltan.append("resultados/pregunta7.md")
+    for md in ("pregunta7.md", "preguntas_abiertas.md"):
+        if md not in texto:
+            faltan.append(f"resultados/{md}")
     return faltan
 
 

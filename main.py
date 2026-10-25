@@ -191,7 +191,7 @@ def main():
     ap.add_argument("--fecha", default="2026-10-30", help="solo --escenario E")
     ap.add_argument("--hora-consulta", default="19:00", help="solo --escenario E (HH:MM)")
     ap.add_argument("--factor-q", type=float, default=30.0,
-                    help="solo --escenario E; 30 = calibrado con innovaciones (escenario_e.py)")
+                    help="solo --escenario E; 30 = calibrado con innovaciones (integracion/escenario_e.py)")
     args = ap.parse_args()
     if args.escenario == "E":
         pipeline_E(args)
