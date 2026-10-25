@@ -11,6 +11,8 @@ Que hace:
   1. Frecuencias de tarifa_alta y escasez por contexto.
   2. Identificabilidad: una regresion ingenua NO recupera alpha, beta,
      gamma (pendientes atenuadas). Se usan los valores nominales.
+  2b. Pregunta 6: efecto de la lluvia vs la hora punta sobre la demanda,
+     diferencia ingenua frente a regresion multiple (E_efectos_contexto.csv).
   3. Calibracion de la red bayesiana: cortes de discretizar(), valores de
      VALORES_D0 / VALORES_S0 y una red re-estimada con estimar_desde_datos()
      usando tarifa_alta como proxy de Escasez.
@@ -18,16 +20,16 @@ Que hace:
      precio vs precio + solicitudes, con error de prediccion a un paso e
      innovaciones (no hay estado verdadero).
 
-Uso:  python escenario_e.py
+Uso (desde la raiz):  python -m integracion.escenario_e
 """
 
 import numpy as np
 import pandas as pd
 
-import comun
-import params as P
-import modelo_euler as me
-import filtro_kalman as fk
+from integracion import comun
+from integracion import params as P
+from capa1_euler import modelo_euler as me
+from capa3_kalman import filtro_kalman as fk
 
 AVISO = "datos sinteticos"
 CONTEXTO = ["hora_punta", "lluvia", "evento", "trafico_alto"]
@@ -108,6 +110,50 @@ def identificabilidad(df):
          "pendiente_regresion": _pendiente(df["precio_bs"], df["vehiculos"])},
     ])
     comun.guardar_tabla(tabla.round(3), "E_identificabilidad.csv", index=False)
+    return tabla
+
+
+# ---------------------------------------------------------------------------
+# 2b. Pregunta 6: separar el efecto de la lluvia del de la hora punta
+# ---------------------------------------------------------------------------
+# Efectos sobre D0 con que se generaron los datos (datos/README.md, sec. 4.2).
+# Solo sirven para comprobar el metodo; con datos reales no se conocen.
+EFECTOS_GENERADOR = {"hora_punta": 12.0, "lluvia": 10.0, "evento": 10.0, "trafico_alto": 3.0,
+                     "sabado": -2.0, "domingo": -6.0}
+
+
+def _mco(y, columnas):
+    """Minimos cuadrados con intercepto; devuelve coeficientes y errores estandar."""
+    X = np.column_stack([np.ones(len(y))] + [np.asarray(c, float) for c in columnas])
+    b, *_ = np.linalg.lstsq(X, y, rcond=None)
+    resid = y - X @ b
+    s2 = resid @ resid / (len(y) - X.shape[1])
+    ee = np.sqrt(np.diag(s2 * np.linalg.inv(X.T @ X)))
+    return b[1:], ee[1:]
+
+
+def efectos_contexto(df):
+    """Efecto de cada factor sobre la demanda a precio de referencia (D0_hat).
+    La diferencia de medias ingenua mezcla factores que ocurren juntos (en los
+    datos casi toda la lluvia cae en hora punta y el viernes coincide con el
+    evento); la regresion multiple compara intervalos que solo difieren en un
+    factor, que es la comparacion ceteris paribus de la red bayesiana."""
+    y = df["D0_hat"].values.astype(float)
+    factores = {"hora_punta": df["hora_punta"], "lluvia": df["lluvia"], "evento": df["evento"],
+                "trafico_alto": df["trafico_alto"], "sabado": df["dia_semana"] == 5,
+                "domingo": df["dia_semana"] == 6}
+    dos, _ = _mco(y, [factores["hora_punta"], factores["lluvia"]])
+    todos, ee = _mco(y, list(factores.values()))
+    filas = []
+    for i, (nombre, x) in enumerate(factores.items()):
+        x = np.asarray(x, bool)
+        filas.append({"factor": nombre, "n_intervalos": int(x.sum()),
+                      "diferencia_ingenua": y[x].mean() - y[~x].mean(),
+                      "regresion_hora_y_lluvia": dos[i] if i < 2 else np.nan,
+                      "regresion_completa": todos[i], "error_estandar": ee[i],
+                      "valor_generador": EFECTOS_GENERADOR[nombre]})
+    tabla = pd.DataFrame(filas)
+    comun.guardar_tabla(tabla.round(3), "E_efectos_contexto.csv", index=False)
     return tabla
 
 
@@ -350,6 +396,10 @@ def main():
     ident = identificabilidad(df)
     print("\nIdentificabilidad: pendiente de una regresion ingenua vs valor nominal")
     print(ident.round(3).to_string(index=False))
+
+    efectos = efectos_contexto(df)
+    print("\nPregunta 6: efecto de cada factor sobre D0 (ingenuo vs regresion vs generador)")
+    print(efectos.round(2).to_string(index=False))
 
     cortes, crudos, vD0, vS0, sep = calibracion(df)
     print(f"\nTerciles crudos (datos/README.md): solicitudes {crudos['solicitudes']}, "

@@ -1,7 +1,8 @@
 """
 filtro_kalman.py  (Persona 3: estimación con filtro de Kalman)
 
-Usa modelo_euler.py de la Persona 1. Debe estar en la misma carpeta.
+Usa capa1_euler/modelo_euler.py de la Persona 1.
+Demostracion (desde la raiz):  python -m capa3_kalman.filtro_kalman
 
 Estado:        x_k = (p_k, D_k)   (precio y demanda)
 Dinámica:      x_k = F x_{k-1} + B u_k + w_k,   w_k ~ N(0, Q)
@@ -13,7 +14,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from modelo_euler import simular, matriz_F, termino_entrada, PARAMS_BASE
+from capa1_euler.modelo_euler import simular, matriz_F, termino_entrada, PARAMS_BASE
 
 
 # ----------------------------------------------------------------------
@@ -297,5 +298,9 @@ if __name__ == "__main__":
     caso_base = ejecutar_caso_completo(semilla=0)
     print("Desempeño:", resumir_desempeno(caso_base["simulacion"],
                                           caso_base["resultado"]))
-    graficar_estimacion(caso_base, "Escenario A: precio y demanda")
-    exportar_estimaciones_csv(caso_base)
+    import os
+    carpeta_salidas = os.path.join(os.path.dirname(os.path.abspath(__file__)), "salidas")
+    os.makedirs(carpeta_salidas, exist_ok=True)
+    graficar_estimacion(caso_base, "Escenario A: precio y demanda",
+                        ruta_guardado=os.path.join(carpeta_salidas, "estimaciones_kalman.png"))
+    exportar_estimaciones_csv(caso_base, os.path.join(carpeta_salidas, "estimaciones_kalman.csv"))

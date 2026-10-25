@@ -4,14 +4,17 @@ Modela cómo el contexto (hora, clima, eventos, tráfico y costos) cambia la dem
 
 ## Cómo ejecutar
 
+Las dependencias están en el `requirements.txt` de la raíz (pgmpy es opcional, solo verifica los resultados).
+
 ```
-pip install matplotlib           # obligatorio solo para dibujar.py
-pip install pgmpy                # opcional: verifica nuestros resultados
+cd capa2_bayes
 python red.py                    # valida la red
 python consultas.py              # consultas, pregunta 6, Monte Carlo y verificación
 python traduccion.py             # tabla contexto -> D0, S0 para Euler
 python dibujar.py                # guarda las figuras en figuras/
 ```
+
+Desde la raíz también funciona `python -m capa2_bayes.consultas`. Los demás módulos la importan como `from capa2_bayes import traduccion`.
 
 La inferencia está programada desde cero, igual que en clase: se **multiplica y normaliza**. pgmpy solo se usa para comprobar que el resultado coincide.
 
@@ -41,18 +44,19 @@ Precio y Servicios realizados quedan fuera de la red porque los calcula el model
 - **Monte Carlo vs. exacto:** con 100 000 muestras la diferencia es de 0.005. El muestreo con rechazo desperdicia casi todas las muestras porque el contexto consultado es raro (~0.4 %).
 - **pgmpy** da exactamente el mismo resultado (0.690693).
 
-## Pendiente: datos de la Persona 4
+## Calibración con datos (hecha por la Persona 4)
 
-Todo funciona con supuestos expertos. Cuando lleguen datos reales:
+Los cuatro puntos que quedaban pendientes se resolvieron en `integracion/escenario_e.py` con los datos del Escenario E (**sintéticos**, ver `datos/README.md`):
 
-1. **Probabilidades de los nodos raíz** (`red.py`, TABLAS de Hora, Clima, Evento y Costos): reemplazar por frecuencias observadas (por ejemplo, P(lluvia) en Cochabamba).
-2. **Tablas condicionales:** `estimar_desde_datos(filas)` ya está programada y probada con datos sintéticos. Mezcla el supuesto experto (peso de 20 observaciones) con los datos.
-3. **Discretización:** definir los cortes de `discretizar()` para convertir conteos de solicitudes y vehículos en baja/media/alta.
-4. **Valores de traducción** (`traduccion.py`, VALORES_D0 y VALORES_S0): calibrar con el promedio de solicitudes y vehículos de cada categoría.
+1. **Tablas condicionales:** `estimar_desde_datos()` re-estima la red mezclando el supuesto experto (peso de 20 observaciones) con los datos. Es la "red calibrada" que usan `main.py` e `integracion/decision.py`; la red experta de este archivo sigue siendo la de referencia.
+2. **Escasez:** en los datos D > S casi no depende del contexto (el precio equilibra el mercado), así que para calibrar se usó `tarifa_alta` como proxy.
+3. **Discretización:** cortes en los terciles de la demanda y la oferta a precio de referencia (`resultados/tablas/E_calibracion_traduccion.csv`).
+4. **Valores de traducción:** `VALORES_D0` y `VALORES_S0` de `traduccion.py` quedaron en 47/54/65 y 43/47/50.
 
-Formato de datos esperado: una fila por intervalo con las columnas `Hora, Clima, Evento, Costos, Trafico, Demanda, Oferta, Escasez`.
+Los nodos raíz (Hora, Clima, Evento, Costos) conservan los supuestos expertos; Costos no se observa en los datos.
 
 ## Posibles extensiones
 
 - Agregar un nodo **Día** (laboral/viernes/fin de semana), porque la consulta del documento menciona el viernes.
 - Agregar **tiempos de espera** como variable observada (relacionado con la pregunta 5).
+- La pregunta 6 también se respondió con datos: ver la sección 7.6 del informe y `resultados/tablas/E_efectos_contexto.csv`.

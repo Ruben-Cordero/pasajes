@@ -1,0 +1,5 @@
+alpha,contexto,p_eq_lineal,r_lineal,p_eq_con_umbral,pendiente_demanda_con_umbral,r_con_umbral,estable_con_umbral,alpha_max_con_umbral
+0.1,base (D0 = 50),7.8571,-0.75,7.7645,-2.1493,-0.8246,True,0.1096
+0.1,hora punta (D0 = 100),22.1429,-0.75,15.8109,-9.8007,-4.6504,False,0.0354
+0.03,base (D0 = 50),7.8571,0.475,7.7645,-2.1493,0.4526,True,0.1096
+0.03,hora punta (D0 = 100),22.1429,0.475,15.8109,-9.8007,-0.6951,True,0.0354

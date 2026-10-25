@@ -15,7 +15,7 @@ Salidas:
   resultados/tablas/montecarlo_resumen.csv   P(escasez), precio medio, etc.
   resultados/figuras/montecarlo_bandas.png
 
-Uso:  python montecarlo.py [--n 500]
+Uso (desde la raiz):  python -m integracion.montecarlo [--n 500]
 """
 
 import argparse
@@ -23,10 +23,10 @@ import argparse
 import numpy as np
 import pandas as pd
 
-import comun
-import params as P
-import modelo_euler as me
-import escenario_e
+from integracion import comun
+from integracion import params as P
+from capa1_euler import modelo_euler as me
+from integracion import escenario_e
 
 CONTEXTOS = {
     "valle_seco": comun.evidencia("valle", "seco", "no"),

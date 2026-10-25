@@ -24,7 +24,7 @@ traduce en un cambio de D0/S0 y se re-simula con simular() (Persona 1):
 Es una evaluacion en lazo abierto (las decisiones se toman sobre la
 trayectoria sin intervenir); ver limitaciones en resultados/pregunta7.md.
 
-Uso:  python decision.py
+Uso (desde la raiz):  python -m integracion.decision
 """
 
 import os
@@ -32,11 +32,11 @@ import os
 import numpy as np
 import pandas as pd
 
-import comun
-import params as P
-import modelo_euler as me
-import filtro_kalman as fk
-import escenario_e
+from integracion import comun
+from integracion import params as P
+from capa1_euler import modelo_euler as me
+from capa3_kalman import filtro_kalman as fk
+from integracion import escenario_e
 
 ACCIONES = ("MANTENER", "SUBIR", "INCENTIVAR")
 X_GRID = np.round(np.arange(0.05, 0.951, 0.05), 2)

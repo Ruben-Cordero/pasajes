@@ -24,12 +24,12 @@ import argparse
 import numpy as np
 import pandas as pd
 
-import comun
-import params as P
-import modelo_euler as me
-import filtro_kalman as fk
-import decision
-import escenario_e
+from integracion import comun
+from integracion import params as P
+from capa1_euler import modelo_euler as me
+from capa3_kalman import filtro_kalman as fk
+from integracion import decision
+from integracion import escenario_e
 
 
 def red_elegida(nombre):

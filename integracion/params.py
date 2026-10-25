@@ -9,7 +9,7 @@ comprueba al arrancar que no se hayan desincronizado.
 
 import os
 
-RAIZ = os.path.dirname(os.path.abspath(__file__))
+RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RESULTADOS = os.path.join(RAIZ, "resultados")
 FIGURAS = os.path.join(RESULTADOS, "figuras")
 TABLAS = os.path.join(RESULTADOS, "tablas")
@@ -82,6 +82,17 @@ KALMAN_D = {
     "desviacion_medicion_demanda": 3.0,
     "realizaciones": 50,
 }
+
+# Valores atipicos inyectados (10 desviaciones) para probar la robustez
+ATIPICOS_D = (20, 21, 40)
+
+# ---------------------------------------------------------------------------
+# Pregunta 4: umbral de tolerancia al precio (capa3_kalman/no_lineal.py).
+# Con el umbral, la pendiente local de la demanda en el equilibrio de B pasa
+# de -2 a -9,8 y el limite de estabilidad baja a alpha < 0,035; por eso la
+# comparacion de filtros se hace con alpha = 0,03.
+# ---------------------------------------------------------------------------
+ALPHA_NO_LINEAL = 0.03
 
 # ---------------------------------------------------------------------------
 # Escenario E: ruido con que se generaron los datos (datos/README.md, sec. 7)

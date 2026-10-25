@@ -132,7 +132,7 @@ Comprobaciones sobre `escenario_e.csv`:
    P(tarifa alta) es 0.01 en valle y 0.63 en punta, y 0.19 sin lluvia frente a 0.95 con lluvia. Para calibrar el nodo Escasez de la red bayesiana conviene usar `tarifa_alta`
    (o la presión de escasez a precio de referencia) y explicarlo en el informe.
 2. **Los parámetros no se recuperan con una regresión ingenua.** Una regresión simple de estos datos da pendientes atenuadas
-   (≈ 0.23 en lugar de Δt·α = 0.5; ≈ −1.0 en lugar de −β = −2; ≈ 1.2 en lugar de γ = 1.5) por el ruido de medición y la simultaneidad precio–demanda.
+   (≈ 0.23 en lugar de Δt·α = 0.5; ≈ +0.58, con el signo contrario, en lugar de −β = −2; ≈ 0.84 en lugar de γ = 1.5; ver `resultados/tablas/E_identificabilidad.csv`) por el ruido de medición y la simultaneidad precio–demanda.
    Es justamente la pregunta de identificabilidad (pregunta 2 del documento). **Usar los valores nominales del documento**; no estimarlos de este CSV.
 3. **No hay estado verdadero en el CSV**, igual que con datos reales. El error de estimación del filtro debe medirse en el Escenario D (con `simular()`);
    en el E se puede medir el error de predicción a un paso y la consistencia de las innovaciones.
@@ -146,7 +146,7 @@ Comprobaciones sobre `escenario_e.csv`:
 - **Red bayesiana (Persona 2).**
   - Priors de lluvia: tabla de `lluvia_senamhi.csv` filtrada por `dias_con_lluvia`.
   - Cortes de `discretizar()`: terciles de la sección 5.
-  - Tabla de traducción sugerida, a reconciliar con `traduccion.py`: D0 ≈ 50 / 62 / 75 (baja / media / alta) y S0 ≈ 48 / 44 / 38 (alta / media / baja).
+  - Tabla de traducción: ya calibrada en `capa2_bayes/traduccion.py` con estos datos (D0 = 47 / 54 / 65 y S0 = 43 / 47 / 50; detalle en `resultados/tablas/E_calibracion_traduccion.csv`). Los valores orientativos iniciales eran D0 ≈ 50 / 62 / 75 y S0 ≈ 48 / 44 / 38.
   - Frecuencias condicionales: ejecutar `preparar.py` e imprimir las tablas de P(tarifa_alta) y P(escasez) por contexto.
 - **Kalman (Persona 3).** Medir con `precio_bs` y `solicitudes`. Valores de ruido con los que se generaron los datos (sirven de referencia para calibrar Q y R):
   R ≈ diag(0.18, 6.25) (error de precio incluye el redondeo) y Q ≈ diag(0.25, 1.0).

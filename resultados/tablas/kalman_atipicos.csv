@@ -1,0 +1,8 @@
+metrica,sin_atipicos_estandar,sin_atipicos_robusto,con_atipicos_estandar,con_atipicos_robusto
+error_precio,0.439,0.4431,0.9669,0.5002
+error_demanda,2.1931,2.2011,3.3702,2.2874
+cobertura_precio,0.9523,0.952,0.88,0.9527
+cobertura_demanda,0.953,0.9527,0.9037,0.9517
+tiempo_convergencia_min,146.9792,151.25,223.2292,186.4583
+mediciones_descartadas,0.0,0.02,0.0,3.0
+atipicos_detectados,,,,1.0

@@ -4,23 +4,15 @@ comun.py - Utilidades compartidas por los scripts de la Persona 4
 """
 
 import os
-import sys
 
 import matplotlib
 matplotlib.use("Agg")  # guarda figuras sin abrir ventanas
 import matplotlib.pyplot as plt
 
-import params as P
-
-# Bayes/ usa imports relativos o planos; se agrega la carpeta al path para
-# importar sus modulos tal cual, sin modificarlos.
-_BAYES = os.path.join(P.RAIZ, "Bayes")
-if _BAYES not in sys.path:
-    sys.path.insert(0, _BAYES)
-
-from red import construir_red, estimar_desde_datos, discretizar  # noqa: E402
-from consultas import consultar, entropia  # noqa: E402
-import traduccion  # noqa: E402
+from integracion import params as P
+from capa2_bayes.red import construir_red, estimar_desde_datos, discretizar
+from capa2_bayes.consultas import consultar, entropia
+from capa2_bayes import traduccion
 
 COLORES = {"A": "#1f77b4", "B": "#d62728", "C": "#2ca02c", "D": "#9467bd",
            "E": "#ff7f0e"}

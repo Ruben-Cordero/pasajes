@@ -1,0 +1,7 @@
+factor,n_intervalos,diferencia_ingenua,regresion_hora_y_lluvia,regresion_completa,error_estandar,valor_generador
+hora_punta,449,14.698,13.223,11.138,0.272,12.0
+lluvia,56,22.574,15.581,9.96,0.523,10.0
+evento,43,20.776,,10.383,0.584,10.0
+trafico_alto,450,11.974,,2.168,0.269,3.0
+sabado,193,-3.775,,-1.93,0.262,-2.0
+domingo,193,-8.569,,-5.904,0.261,-6.0

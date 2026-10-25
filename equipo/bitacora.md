@@ -1,0 +1,52 @@
+# Bitácora del equipo
+
+El documento del caso (sección 8) pide revisión cruzada, rotación al exponer, repositorio con commits por autor, bitácora de aprendizaje y defensa oral individual, y el criterio de evaluación 7 revisa que haya evidencia de ello. Este archivo reúne esa evidencia; los commits por autor están en Git. **Cada integrante debe llenar su parte con lo que realmente hizo.**
+
+## Roles
+
+| Persona | Rol | Carpeta | Usuario de Git | Nombre |
+|---|---|---|---|---|
+| 1 | Coordinador/a de modelo (Euler) | `capa1_euler/` | lucianaaaaaaa | _completar_ |
+| 2 | Analista bayesiano/a | `capa2_bayes/` | alous12 | _completar_ |
+| 3 | Ingeniero/a de estimación (Kalman) | `capa3_kalman/` | Sarah Cazorla | _completar_ |
+| 4 | Analista de decisiones y datos | `integracion/`, `datos/`, `informe/` | Rubén Cordero | Rubén Cordero |
+
+## 1. Revisión cruzada
+
+Ningún entregable está terminado hasta que otro integrante lo ejecutó y lo revisó.
+
+| Entregable | Autor | Revisado y ejecutado por | Fecha | Observaciones |
+|---|---|---|---|---|
+| `capa1_euler/modelo_euler.py` y cuaderno | P1 | | | |
+| `capa2_bayes/` (red, consultas, traducción) | P2 | | | |
+| `capa3_kalman/filtro_kalman.py` | P3 | | | |
+| `capa3_kalman/extensiones.py` y `no_lineal.py` | | | | |
+| `integracion/` (escenarios A–E, Monte Carlo, decisión) | P4 | | | |
+| `informe/informe.docx` | P4 | | | |
+
+
+## 2. Bitácora de aprendizaje
+
+Cada integrante anota, en pocas líneas, qué aprendió de las **otras tres** capas. Sirve para preparar la defensa oral individual (regla 5): cualquiera debe poder explicar cualquier sección.
+
+### Persona 1 (Euler)
+- Red bayesiana:
+- Filtro de Kalman:
+- Escenarios y decisión:
+
+### Persona 2 (Bayes)
+- Modelo de Euler:
+- Filtro de Kalman:
+- Escenarios y decisión:
+
+### Persona 3 (Kalman)
+- Modelo de Euler:
+- Red bayesiana:
+- Escenarios y decisión:
+
+### Persona 4 (decisión y datos)
+- Modelo de Euler:
+- Red bayesiana:
+- Filtro de Kalman:
+
+

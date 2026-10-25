@@ -2,7 +2,7 @@
 generar_informe.py - Informe final (informe.docx) y presentacion (presentacion.pptx)
 Persona 4 (escenarios, datos, decision e integracion)
 
-Lee las tablas y figuras de resultados/ (correr antes escenarios.py,
+Lee las tablas y figuras de resultados/ (correr antes integracion/escenarios.py,
 escenario_e.py, montecarlo.py, decision.py y main.py) y arma el informe con
 las normas de la universidad:
   - Times New Roman 12, interlineado 1.5, texto justificado, todo en negro.
@@ -12,7 +12,7 @@ las normas de la universidad:
   - Diagramas en blanco y negro; solo las graficas llevan color.
 Al final comprueba que cada archivo de resultados/ este citado en el texto.
 
-Uso:  python informe/generar_informe.py
+Uso (desde la raiz):  python informe/generar_informe.py
 """
 
 import os
@@ -23,9 +23,9 @@ import pandas as pd
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, RAIZ)
 
-import comun  # noqa: E402  (configura matplotlib en modo Agg)
-import params as P  # noqa: E402
-import modelo_euler as me  # noqa: E402
+from integracion import comun  # noqa: E402  (configura matplotlib en modo Agg)
+from integracion import params as P  # noqa: E402
+from capa1_euler import modelo_euler as me  # noqa: E402
 
 from docx import Document  # noqa: E402
 from docx.enum.section import WD_ORIENT  # noqa: E402,F401
@@ -323,9 +323,9 @@ def construir(inf):
     inf.parrafo("Informe final", WD_ALIGN_PARAGRAPH.CENTER, negrita=True)
     inf.parrafo("Asignatura: Modelado", WD_ALIGN_PARAGRAPH.CENTER)
     d.add_paragraph()
-    for linea in ["Persona 1, modelo dinámico (Euler): [completar nombre]",
-                  "Persona 2, red bayesiana: [completar nombre]",
-                  "Persona 3, filtro de Kalman: [completar nombre]",
+    for linea in ["Persona 1, modelo dinámico (Euler): Luciana Leaño",
+                  "Persona 2, red bayesiana: Alejandro Machaca",
+                  "Persona 3, filtro de Kalman: Sarah Cazorla",
                   "Persona 4, escenarios, datos, decisión e integración: Rubén Cordero"]:
         inf.parrafo(linea, WD_ALIGN_PARAGRAPH.CENTER)
     d.add_paragraph()
@@ -363,7 +363,7 @@ def construir(inf):
 
     inf.titulo("2.1", "Modelo dinámico con el método de Euler (Persona 1)", 2)
     inf.parrafo(
-        "Archivos: modelo_euler.py y precio_dinamico_transporte.ipynb. En cada intervalo k "
+        "Archivos: capa1_euler/modelo_euler.py y capa1_euler/precio_dinamico_transporte.ipynb. En cada intervalo k "
         "la demanda y la oferta responden al precio y el precio se corrige según el exceso de "
         "demanda:")
     inf.parrafo("D_k = D0 + β (p_ref − p_k) + ε_k;   S_k = S0 + γ (p_k − p_costo);   "
@@ -384,7 +384,7 @@ def construir(inf):
 
     inf.titulo("2.2", "Red bayesiana de factores contextuales (Persona 2)", 2)
     inf.parrafo(
-        "Archivos: Bayes/red.py, Bayes/consultas.py, Bayes/traduccion.py y Bayes/dibujar.py. "
+        "Archivos: capa2_bayes/red.py, capa2_bayes/consultas.py, capa2_bayes/traduccion.py y capa2_bayes/dibujar.py. "
         "La red (Figura 2) tiene cuatro nodos de contexto (Hora, Clima, Evento y Costos), un "
         "nodo intermedio (Tráfico), dos nodos de mercado (Demanda y Oferta, con niveles baja, "
         "media y alta) y el nodo Escasez. Las tablas de probabilidad son supuestos expertos "
@@ -394,24 +394,29 @@ def construir(inf):
         f"{n(viernes_exp['P_escasez_red_experta'], 3)}. traduccion.py convierte las categorías "
         "de la red en los valores D0 y S0 que necesita el modelo de Euler.")
     inf.figura("Red bayesiana: nodos y aristas", diagrama_dag(),
-               fuente="Fuente: Elaboración propia 2026 en base a Bayes/red.py", ancho=12)
+               fuente="Fuente: Elaboración propia 2026 en base a capa2_bayes/red.py", ancho=12)
 
     inf.titulo("2.3", "Filtro de Kalman (Persona 3)", 2)
     inf.parrafo(
-        "Archivo: filtro_kalman.py. El estado es x_k = (p_k, D_k). La transición x_k = F x_(k−1) "
-        "+ B u_k + w_k usa la matriz F derivada del modelo de Euler, y la observación y_k = H x_k "
-        "+ v_k mide solo el precio (H = [1, 0]) o el precio y las solicitudes (H = I2). El filtro "
-        "está escrito a mano (predicción, ganancia y corrección) e incluye los experimentos de "
-        "calibración de Q y R (pregunta 3), valor de la información (pregunta 5) y valores "
-        "atípicos.")
+        "Archivo: capa3_kalman/filtro_kalman.py. El estado es x_k = (p_k, D_k). La transición "
+        "x_k = F x_(k−1) + B u_k + w_k usa la matriz F derivada del modelo de Euler, y la "
+        "observación y_k = H x_k + v_k mide solo el precio (H = [1, 0]) o el precio y las "
+        "solicitudes (H = I2). El filtro está escrito a mano (predicción, ganancia y corrección) "
+        "e incluye los experimentos de calibración de Q y R (pregunta 3), valor de la información "
+        "(pregunta 5) y valores atípicos. Dos archivos lo extienden sin modificarlo: "
+        "capa3_kalman/extensiones.py (predicción a m pasos y filtro robusto a valores atípicos) "
+        "y capa3_kalman/no_lineal.py (umbral de tolerancia al precio, EKF y UKF, pregunta 4). "
+        "Sus resultados están en la sección 7.")
 
     inf.titulo("2.4", "Integración (Persona 4)", 2)
     inf.parrafo(
-        "Archivos: params.py (única fuente de parámetros y definición de los escenarios), "
-        "comun.py, escenarios.py, escenario_e.py, montecarlo.py, decision.py, main.py y este "
-        "informe (informe/generar_informe.py). La única modificación al código de otra capa son "
-        "las constantes VALORES_D0 y VALORES_S0 de Bayes/traduccion.py, calibradas con los datos "
-        "(sección 3.4.3).")
+        "Archivos: integracion/params.py (única fuente de parámetros y definición de los "
+        "escenarios), integracion/comun.py, integracion/escenarios.py, integracion/escenario_e.py, "
+        "integracion/montecarlo.py, integracion/decision.py, main.py, reproducir.py y este "
+        "informe (informe/generar_informe.py). La única modificación de lógica al código de otra "
+        "capa son las constantes VALORES_D0 y VALORES_S0 de capa2_bayes/traduccion.py, calibradas "
+        "con los datos (sección 3.4.3); al ordenar el repositorio por capas solo se ajustaron las "
+        "rutas de los import.")
 
     # ------------------------------------------------------------ 3
     inf.titulo("3.", "Escenarios y resultados")
@@ -573,7 +578,7 @@ def construir(inf):
     inf.parrafo(
         "Los valores calibrados (Tabla 6, resultados/tablas/E_calibracion_traduccion.csv) son el "
         "promedio de D0_hat y S0_hat dentro de cada categoría y se aplicaron como constantes en "
-        "Bayes/traduccion.py, con un comentario que cita datos/README.md. Se compararon con los "
+        "capa2_bayes/traduccion.py, con un comentario que cita datos/README.md. Se compararon con los "
         "valores orientativos del README de datos (D0 = 50/62/75, S0 = 38/44/48): con ellos, el "
         "precio de equilibrio que predice la red difiere del precio medio observado en 3,1 Bs "
         "(error cuadrático medio ponderado), frente a 1,2 Bs con los promedios por categoría. "
@@ -688,7 +693,7 @@ def construir(inf):
         "supuestos y están documentados en datos/README.md junto con el procedimiento para "
         "reemplazarlos por capturas reales. Para pasar a datos reales basta con cargar las "
         "nuevas cotizaciones con la columna fuente y volver a ejecutar preparar.py y los scripts "
-        "de la sección 9.")
+        "de la sección 11.")
 
     # ------------------------------------------------------------ 5
     inf.titulo("5.", "Integración y pipeline")
@@ -799,8 +804,17 @@ def construir(inf):
         "resultados/pregunta7.md.")
 
     # ------------------------------------------------------------ 7
-    inf.titulo("7.", "Limitaciones")
+    preguntas_abiertas(inf, vi, ident, kal_fila, ganancia, X, Y)
+
+    # ------------------------------------------------------------ 8
+    trabajo_en_equipo(inf)
+
+    # ------------------------------------------------------------ 9
+    inf.titulo("9.", "Limitaciones")
     inf.vinetas([
+        "**Umbral de tolerancia supuesto.** El umbral de 18 Bs de la sección 7.4 es un supuesto "
+        "para estudiar la no linealidad; con datos reales habría que estimarlo con los rechazos "
+        "de viaje o las cotizaciones abandonadas.",
         "**Datos sintéticos.** El Escenario E valida que el sistema funciona de punta a punta, "
         "no que prediga el mercado real. Una semana, una ruta y eventos programados.",
         "**Parámetros no identificables con regresión simple.** Se usaron los valores nominales "
@@ -820,9 +834,21 @@ def construir(inf):
         "**Costos de operación no observados.** El nodo Costos de la red no se pudo calibrar.",
     ])
 
-    # ------------------------------------------------------------ 8
-    inf.titulo("8.", "Conclusiones")
+    # ------------------------------------------------------------ 10
+    nl_est = tabla_csv("no_lineal_estabilidad.csv")
+    nl_fil = tabla_csv("no_lineal_filtros.csv").set_index(["mediciones", "filtro"])
+    inf.titulo("10.", "Conclusiones")
     inf.vinetas([
+        "α es el parámetro más delicado: no cambia el precio de equilibrio, pero el valor "
+        "nominal está a un 14 % del límite de inestabilidad; con la mitad de α el precio llega "
+        "al equilibrio sin oscilar (pregunta 1).",
+        "Con un umbral de tolerancia al precio, la demanda se vuelve mucho más sensible cerca "
+        "del umbral y el α nominal hace oscilar el precio entre el piso y 35 Bs; el límite de "
+        f"estabilidad baja a α < {n(nl_est['alpha_max_con_umbral'].min(), 3)}. Con un α estable, "
+        "el EKF y el UKF reducen el error del precio de "
+        f"{n(nl_fil.loc[('solo precio', 'KF lineal'), 'error_precio'])} a "
+        f"{n(nl_fil.loc[('solo precio', 'EKF'), 'error_precio'])} Bs frente al filtro lineal "
+        "(pregunta 4).",
         f"El modelo de Euler con los parámetros del documento es estable (Δt α (β + γ) = "
         f"{n(est['producto'])} < 2) pero oscilante (r = {n(est['r'])}); desde p0 = 10 converge a "
         f"p* = {n(met.loc['A', 'p_eq_teorico_base'])} Bs en {n(met.loc['A', 'tiempo_hasta_equilibrio_min'], 0)} "
@@ -843,44 +869,55 @@ def construir(inf):
         "eficiencia.",
     ])
 
-    # ------------------------------------------------------------ 9
-    inf.titulo("9.", "Reproducibilidad")
+    # ------------------------------------------------------------ 11
+    inf.titulo("11.", "Reproducibilidad")
     inf.parrafo(
-        "Todo el trabajo se reproduce desde cero con Python 3.11 o superior. Los resultados son "
-        f"deterministas (semilla {P.SEMILLA}):")
+        "Todo el trabajo se reproduce desde cero con Python 3.11 o superior, desde la carpeta "
+        f"raíz del proyecto. Los resultados son deterministas (semilla {P.SEMILLA}):")
     inf.vinetas(["pip install -r requirements.txt",
-                 "python escenarios.py", "python escenario_e.py", "python montecarlo.py",
-                 "python decision.py", "python main.py", "python main.py --escenario E",
+                 "python reproducir.py  (corre en orden todos los pasos siguientes)",
+                 "python -m integracion.escenarios", "python -m integracion.escenario_e",
+                 "python -m integracion.montecarlo", "python -m integracion.decision",
+                 "python main.py y python main.py --escenario E",
                  "python informe/generar_informe.py"], estilo="List Number")
     inf.parrafo(
-        "La Tabla 13 lista los archivos de resultados que se citan en este informe y el script "
-        "que genera cada uno.")
-    origen = {"metricas_escenarios.csv": "escenarios.py", "kalman_valor_informacion.csv": "escenarios.py",
-              "estimaciones_kalman_D.csv": "escenarios.py", "escenarios_ABC.png": "escenarios.py",
-              "escenario_A_convergencia.png": "escenarios.py", "escenario_D_kalman.png": "escenarios.py",
-              "pregunta7.md": "redactado a partir de decision.py"}
+        f"La Tabla {inf.n_tabla + 1} lista los archivos de resultados que se citan en este "
+        "informe y el script que genera cada uno.")
     filas = []
     for sub in ("figuras", "tablas"):
         for f in sorted(os.listdir(os.path.join(P.RESULTADOS, sub))):
             if f.startswith("E_"):
-                gen = "escenario_e.py"
+                gen = "integracion/escenario_e.py"
             elif f.startswith("montecarlo"):
-                gen = "montecarlo.py"
+                gen = "integracion/montecarlo.py"
             elif f.startswith("decision"):
-                gen = "decision.py"
+                gen = "integracion/decision.py"
             elif f.startswith("pipeline"):
                 gen = "main.py"
             else:
-                gen = origen.get(f, "escenarios.py")
+                gen = "integracion/escenarios.py"
             filas.append([f"resultados/{sub}/{f}", gen])
-    filas.append(["resultados/pregunta7.md", origen["pregunta7.md"]])
+    filas.append(["resultados/pregunta7.md", "redactado a partir de integracion/decision.py"])
     inf.tabla("Archivos de resultados", ["Archivo", "Generado por"], filas)
 
     # ------------------------------------------------------------ Referencias
     inf.titulo("", "Referencias")
     for ref in [
-        "Documento del caso de estudio «Precio dinámico de transporte según oferta y demanda». "
-        "Asignatura Modelado, 2026. [completar autor]",
+        "Documento del caso de estudio «Del pasajero al precio: un caso de estudio en modelado "
+        "dinámico, inferencia bayesiana y estimación de estado aplicado al precio del transporte "
+        "según oferta y demanda». Área de Modelado y Simulación de Sistemas, 2026.",
+        "Bar-Shalom, Y., Li, X. R. y Kirubarajan, T. (2001). Estimation with Applications to "
+        "Tracking and Navigation. Wiley. (Prueba NIS de consistencia del filtro.)",
+        "Box, G. E. P. (1976). Science and statistics. Journal of the American Statistical "
+        "Association, 71(356), 791-799.",
+        "Julier, S. J. y Uhlmann, J. K. (2004). Unscented filtering and nonlinear estimation. "
+        "Proceedings of the IEEE, 92(3), 401-422.",
+        "Kalman, R. E. (1960). A new approach to linear filtering and prediction problems. "
+        "Journal of Basic Engineering, 82(1), 35-45.",
+        "Koller, D. y Friedman, N. (2009). Probabilistic Graphical Models: Principles and "
+        "Techniques. MIT Press.",
+        "Pearl, J. (2009). Causality: Models, Reasoning, and Inference (2.ª ed.). Cambridge "
+        "University Press.",
         "Los Tiempos (2024-2025). Notas sobre la Ley Municipal 1575/2024 de tarifas del "
         "transporte público en Cochabamba (pasaje de 2,50 Bs y estudio de costos de 2,49 Bs).",
         "SENAMHI (2024). Boletín BOL-PC-N01-2024 (diciembre de 2023): Tablas 1 a 4 e "
@@ -889,6 +926,311 @@ def construir(inf):
         "Servicio Nacional de Meteorología e Hidrología de Bolivia.",
     ]:
         inf.parrafo(ref)
+
+
+# ---------------------------------------------------------------------------
+# Seccion 7: preguntas abiertas del caso
+# ---------------------------------------------------------------------------
+def _si_no(v):
+    return "Sí" if str(v).lower() in ("true", "1", "1.0") else "No"
+
+
+def _o_guion(x, d=2):
+    return "–" if pd.isna(x) else n(x, d)
+
+
+def preguntas_abiertas(inf, vi, ident, kal_fila, ganancia, X, Y):
+    from capa2_bayes.consultas import pregunta6, explicacion_alternativa
+
+    sens = tabla_csv("sensibilidad_parametros.csv")
+    qr = tabla_csv("kalman_sensibilidad_QR.csv")
+    atip = tabla_csv("kalman_atipicos.csv").set_index("metrica")
+    pron = tabla_csv("kalman_pronostico.csv").set_index("pasos_m")
+    nl_est = tabla_csv("no_lineal_estabilidad.csv")
+    nl_fil = tabla_csv("no_lineal_filtros.csv").set_index(["mediciones", "filtro"])
+    efe = tabla_csv("E_efectos_contexto.csv").set_index("factor")
+    datos_e = pd.read_csv(P.DATOS_E)
+    lluvia_valle = int(((datos_e["lluvia"] == 1) & (datos_e["hora_punta"] == 0)).sum())
+    est = me.estabilidad(P.PARAMS)
+
+    inf.titulo("7.", "Preguntas abiertas del caso")
+    inf.parrafo(
+        "El documento del caso plantea siete preguntas abiertas. Esta sección responde cada una "
+        "con los resultados del sistema; las que ya se trataron en secciones anteriores se "
+        "resumen y se indica dónde está el detalle.")
+
+    # 7.1 ------------------------------------------------------------------
+    inf.titulo("7.1", "Pregunta 1: sensibilidad a α, β y γ", 2)
+    inf.parrafo(
+        "Se multiplicó cada parámetro por 0,5; 0,75; 1; 1,1 y 1,25 dejando los demás en su "
+        "valor nominal (integracion/escenarios.py, resultados/tablas/sensibilidad_parametros.csv). "
+        "Como el error respecto del equilibrio se multiplica por r = 1 − Δt α (β + γ) en cada "
+        "intervalo, la oscilación del precio siempre tiene periodo de dos intervalos (10 minutos) "
+        "cuando r < 0, y su amplitud se reduce en |r| por paso. Por eso lo que cambian los "
+        "parámetros es la amplitud y la duración de la oscilación, no su frecuencia.")
+    filas = [[r.parametro, n(r.factor), n(r.valor, 3), n(r.r, 3), _si_no(r.estable), n(r.p_eq),
+              _o_guion(r.t_equilibrio_A_min, 0), _o_guion(r.sobreimpulso_B_bs)]
+             for r in sens.itertuples()]
+    inf.tabla("Sensibilidad del modelo de Euler a α, β y γ",
+              ["Parám.", "Factor", "Valor", "r", "Estable", "p* (Bs)", "t. equil. A (min)",
+               "Sobreimpulso B (Bs)"], filas)
+    el = sens.groupby("parametro")["elasticidad_p_eq"].first()
+    inf.parrafo(
+        f"α no aparece en el precio de equilibrio (elasticidad {n(el['alpha'], 2)}) pero es el "
+        "parámetro que más mueve la dinámica: el valor nominal 0,1 está cerca del límite de "
+        f"estabilidad α < {n(est['alpha_max'], 3)}, de modo que un aumento de "
+        f"{pct(est['alpha_max'] / P.PARAMS['alpha'] - 1)} lo vuelve inestable, mientras que con la "
+        "mitad de α el precio llega al equilibrio en 10 minutos y sin sobreimpulso. β y γ mueven "
+        f"el equilibrio en sentidos opuestos (elasticidades {n(el['beta'], 3)} y "
+        f"{n(el['gamma'], 3)}: más sensibilidad de la demanda acerca p* a p_ref y más "
+        "sensibilidad de la oferta lo acerca a p_costo) y afectan la dinámica solo a través de "
+        "su suma; un 25 % más de β ya lleva a r = −1. Conviene estimar con más precisión α y β: "
+        "α decide si el ajuste es estable y β decide tanto el equilibrio como la estabilidad. La "
+        "Figura " + str(inf.n_figura + 1) + " resume el barrido; el cuaderno "
+        "capa1_euler/precio_dinamico_transporte.ipynb incluye además el mapa de estabilidad.")
+    inf.figura("Sensibilidad a α, β y γ", os.path.join(FIG, "sensibilidad_parametros.png"))
+
+    # 7.2 ------------------------------------------------------------------
+    inf.titulo("7.2", "Pregunta 2: identificabilidad", 2)
+    da = ident.set_index("parametro")
+    inf.parrafo(
+        "Con series de precios y solicitudes el estado sí es identificable: el filtro de Kalman "
+        "estima la demanda latente aunque solo se mida el precio (Tabla 2). Los parámetros no lo "
+        "son con una regresión simple: en el Escenario E la pendiente de Δp sobre el exceso de "
+        f"demanda da {n(da.loc['dt*alpha', 'pendiente_regresion'], 2)} en lugar de "
+        f"{n(da.loc['dt*alpha', 'valor_nominal'], 2)}, la de solicitudes sobre precio "
+        f"{n(da.loc['-beta', 'pendiente_regresion'], 2)} (con el signo contrario) en lugar de "
+        f"{n(da.loc['-beta', 'valor_nominal'], 2)} y la de vehículos sobre precio "
+        f"{n(da.loc['gamma', 'pendiente_regresion'], 2)} en lugar de "
+        f"{n(da.loc['gamma', 'valor_nominal'], 2)} (sección 3.4.2). La causa es la simultaneidad: "
+        "el precio responde a la demanda y la demanda al precio, y el ruido de medición atenúa "
+        "las pendientes. Mejorarían la identificabilidad: los rechazos de viaje y los tiempos de "
+        "espera (miden el exceso de demanda directamente, sin pasar por el precio), variaciones "
+        "de precio exógenas (experimentos o cambios de tarifa) que funcionen como variables "
+        "instrumentales, y estimar α, β y γ como estados adicionales del filtro (filtro "
+        "aumentado).")
+
+    # 7.3 ------------------------------------------------------------------
+    inf.titulo("7.3", "Pregunta 3: calibración de Q y R", 2)
+    inf.parrafo(
+        "Sobre el Escenario D se escalaron Q y R por 0,01, 1 y 100 y se promediaron "
+        f"{P.KALMAN_D['realizaciones']} realizaciones con la función experimento_calibracion_q_r "
+        "de la Persona 3 (resultados/tablas/kalman_sensibilidad_QR.csv).")
+    filas = [[n(r.factor_escala_q), n(r.factor_escala_r), n(r.error_precio, 3),
+              n(r.error_demanda, 3), pct(r.cobertura_precio), pct(r.cobertura_demanda),
+              n(r.tiempo_convergencia_min, 0)] for r in qr.itertuples()]
+    inf.tabla("Escenario D: error y cobertura al escalar Q y R",
+              ["Q ×", "R ×", "Error precio (Bs)", "Error demanda", "Cobertura precio",
+               "Cobertura demanda", "Convergencia (min)"], filas)
+    q = qr.set_index(["factor_escala_q", "factor_escala_r"])
+    inf.parrafo(
+        "Solo la combinación con los valores verdaderos (Q × 1, R × 1) tiene a la vez el menor "
+        "error y una cobertura cercana al 95 %. Con Q demasiado pequeño el filtro confía de más "
+        "en el modelo: se vuelve lento (convergencia de "
+        f"{n(q.loc[(0.01, 1.0), 'tiempo_convergencia_min'], 0)} min) y sus intervalos cubren "
+        f"solo el {pct(q.loc[(0.01, 1.0), 'cobertura_precio'])} de los valores verdaderos. Con R "
+        "demasiado pequeño confía de más en las mediciones: copia el ruido y la cobertura cae al "
+        f"{pct(q.loc[(1.0, 0.01), 'cobertura_precio'])}. Escalar los dos por 100 da intervalos "
+        f"demasiado anchos (cobertura {pct(q.loc[(100.0, 100.0), 'cobertura_precio'])}) y más "
+        "error. La regla práctica que se usó es: R a partir del error conocido de cada sensor "
+        "(en E, el redondeo del precio a 0,5 Bs y el ruido de las solicitudes) y Q ajustado "
+        "hasta que el NIS medio sea igual al número de mediciones, como se hizo en la sección "
+        "3.4.4 (Q × 30).")
+
+    # 7.4 ------------------------------------------------------------------
+    inf.titulo("7.4", "Pregunta 4: umbral de tolerancia al precio, EKF y UKF", 2)
+    inf.parrafo(
+        "Archivo: capa3_kalman/no_lineal.py. Se multiplicó la demanda por una función logística "
+        "tol(p) = 1 / (1 + exp((p − 18) / 2)): a precios normales vale casi 1 y a 18 Bs la mitad "
+        "de los pasajeros deja de pedir. La oferta y la ecuación de ajuste del precio no cambian. "
+        f"La Tabla {inf.n_tabla + 1} (resultados/tablas/no_lineal_estabilidad.csv) compara el "
+        "equilibrio y su estabilidad con y sin umbral.")
+    filas = [[n(r.alpha, 2), r.contexto, n(r.p_eq_lineal), n(r.r_lineal), n(r.p_eq_con_umbral),
+              n(r.pendiente_demanda_con_umbral), n(r.r_con_umbral), _si_no(r.estable_con_umbral)]
+             for r in nl_est.itertuples()]
+    inf.tabla("Equilibrio y estabilidad con umbral de tolerancia",
+              ["α", "Contexto", "p* lineal", "r lineal", "p* con umbral", "dD/dp en p*",
+               "r con umbral", "Estable"], filas)
+    punta = nl_est[(nl_est.alpha == P.PARAMS["alpha"]) & nl_est.contexto.str.startswith("hora")].iloc[0]
+    inf.parrafo(
+        "En hora punta el umbral baja el equilibrio de "
+        f"{n(punta.p_eq_lineal)} a {n(punta.p_eq_con_umbral)} Bs, pero cerca del umbral la "
+        f"demanda cae {n(-punta.pendiente_demanda_con_umbral, 1)} solicitudes por boliviano en vez "
+        f"de 2. El factor de estabilidad pasa a r = {n(punta.r_con_umbral)} y el límite a "
+        f"α < {n(punta.alpha_max_con_umbral, 3)}: con el α nominal el precio ya no converge y "
+        f"salta entre el piso de 5 Bs y unos 35 Bs (Figura {inf.n_figura + 1}). La consecuencia "
+        "práctica es que una plataforma con clientes sensibles al precio debe reducir la "
+        "ganancia de ajuste α cerca del umbral. Para comparar los filtros se usó α = "
+        f"{n(P.ALPHA_NO_LINEAL, 2)}, que es estable con y sin umbral.")
+    inf.figura("Demanda con umbral de tolerancia y precio en el Escenario B",
+               os.path.join(FIG, "no_lineal_dinamica.png"))
+    inf.parrafo(
+        "Se simuló el Escenario B con umbral y ruido, y se estimó el estado con tres filtros: "
+        "el filtro lineal de la Persona 3 (que usa la matriz F del modelo sin umbral), un EKF "
+        "que linealiza la dinámica en cada paso con su jacobiano y un UKF que propaga cinco "
+        "sigma-puntos por la dinámica no lineal "
+        f"({P.KALMAN_D['realizaciones']} realizaciones, resultados/tablas/no_lineal_filtros.csv).")
+    filas = []
+    for (med, filtro), r in nl_fil.iterrows():
+        filas.append([med, filtro, n(r.error_precio, 3), n(r.error_demanda, 3),
+                      pct(r.cobertura_precio), pct(r.cobertura_demanda)])
+    inf.tabla("KF lineal, EKF y UKF con umbral de tolerancia",
+              ["Mediciones", "Filtro", "Error precio (Bs)", "Error demanda", "Cobertura precio",
+               "Cobertura demanda"], filas)
+    kf, ekf, ukf = (nl_fil.loc[("solo precio", f)] for f in ("KF lineal", "EKF", "UKF"))
+    inf.parrafo(
+        "El filtro lineal supone que la demanda sigue en la recta del documento; en hora punta "
+        "cree que hay unas 84 solicitudes cuando hay unas 66, sobreestima el precio y sus "
+        f"intervalos cubren solo el {pct(kf.cobertura_precio)} de los valores verdaderos. El EKF "
+        f"y el UKF bajan el error del precio de {n(kf.error_precio)} a {n(ekf.error_precio)} y "
+        f"{n(ukf.error_precio)} Bs y recuperan una cobertura del "
+        f"{pct(ekf.cobertura_precio)} (Figura {inf.n_figura + 1}). Los dos dan casi lo mismo "
+        "porque la curva es suave en la escala de la incertidumbre de un paso. La diferencia "
+        "aparece en el arranque: el EKF linealiza alrededor de un estado inicial lejano y su "
+        "primera predicción cae al piso de 5 Bs, mientras que el UKF no. Para este problema el "
+        "EKF es suficiente y más barato; el UKF conviene si el umbral es más brusco o si el "
+        "jacobiano es difícil de derivar.")
+    inf.figura("KF lineal, EKF y UKF midiendo solo el precio",
+               os.path.join(FIG, "no_lineal_filtros.png"))
+
+    # 7.5 ------------------------------------------------------------------
+    inf.titulo("7.5", "Pregunta 5: valor de la información", 2)
+    c = kal_fila("contexto red calibrada", "precio + solicitudes", 30.0)
+    s = kal_fila("contexto red calibrada", "solo precio", 30.0)
+    inf.parrafo(
+        f"Agregar las solicitudes como segunda señal reduce el error de la demanda en {pct(ganancia)} "
+        f"en el Escenario D (de {n(vi.loc['error_demanda', 'solo_precio'])} a "
+        f"{n(vi.loc['error_demanda', 'precio_y_solicitudes'])}) y el error de predicción del "
+        f"precio en los datos de {n(s.rmse_prediccion_1paso_precio)} a "
+        f"{n(c.rmse_prediccion_1paso_precio)} Bs. Con el umbral de tolerancia el beneficio es "
+        "mayor, porque la demanda deja de ser una función simple del precio: el error de la "
+        f"demanda del EKF baja de {n(ekf.error_demanda)} a "
+        f"{n(nl_fil.loc[('precio + solicitudes', 'EKF'), 'error_demanda'])}. El error del precio "
+        "cambia poco en todos los casos porque el precio ya se mide directamente. Una tercera "
+        "señal, como los tiempos de espera, aportaría sobre todo a la oferta, que hoy no se "
+        "observa en el filtro.")
+
+    # 7.6 ------------------------------------------------------------------
+    inf.titulo("7.6", "Pregunta 6: efecto de la lluvia frente al de la hora punta", 2)
+    _, ef6 = pregunta6()
+    a6, b6, _ = explicacion_alternativa()
+    inf.parrafo(
+        "En la red bayesiana Hora y Clima son padres distintos de Demanda y no tienen causas "
+        "comunes, así que condicionar equivale a intervenir y cada efecto se obtiene fijando un "
+        "factor y moviendo el otro. La lluvia sube P(demanda alta) en "
+        f"{n(ef6['lluvia (en valle)'], 3)} en horas valle y en {n(ef6['lluvia (en punta)'], 3)} "
+        f"en hora punta; la hora punta la sube en {n(ef6['punta (con seco)'], 3)} con clima seco. "
+        f"La interacción es de {n(ef6['interaccion'], 3)}, así que los efectos son casi aditivos "
+        "(capa2_bayes/consultas.py). La red también muestra por qué no basta con mirar la "
+        f"demanda: si se observa demanda alta, P(punta) = {n(a6, 3)}, pero si además se sabe que "
+        f"llueve baja a {n(b6, 3)}, porque la lluvia ya explica parte de la demanda.")
+    inf.figura("P(demanda alta) separando lluvia y hora punta (red experta)",
+               os.path.join(RAIZ, "capa2_bayes", "figuras", "pregunta6.png"),
+               fuente="Fuente: Elaboración propia 2026 en base a capa2_bayes/dibujar.py", ancho=12)
+    inf.parrafo(
+        "Con datos el problema es que los factores ocurren juntos: en el Escenario E casi toda "
+        "la lluvia cae en hora punta y la del viernes coincide con el evento. La Tabla "
+        f"{inf.n_tabla + 1} (resultados/tablas/E_efectos_contexto.csv, integracion/escenario_e.py) "
+        "compara, para la demanda a precio de referencia, la diferencia de medias ingenua con una "
+        "regresión que incluye todos los factores, y con el valor usado para generar los datos.")
+    filas = [[f, int(r.n_intervalos), n(r.diferencia_ingenua, 1),
+              _o_guion(r.regresion_hora_y_lluvia, 1),
+              f"{n(r.regresion_completa, 1)} ± {n(r.error_estandar, 1)}", n(r.valor_generador, 0)]
+             for f, r in efe.iterrows()]
+    inf.tabla("Efecto de cada factor sobre la demanda base D0",
+              ["Factor", "Intervalos", "Diferencia ingenua", "Regresión hora + lluvia",
+               "Regresión completa ± e.e.", "Valor del generador"], filas, fuente=FUENTE_SINT)
+    inf.parrafo(
+        "La diferencia ingenua atribuye a la lluvia "
+        f"{n(efe.loc['lluvia', 'diferencia_ingenua'], 1)} solicitudes porque mezcla la lluvia con "
+        "la hora punta y el evento; controlar solo por la hora la baja a "
+        f"{n(efe.loc['lluvia', 'regresion_hora_y_lluvia'], 1)} y la regresión completa recupera "
+        f"{n(efe.loc['lluvia', 'regresion_completa'], 1)}, prácticamente el valor del generador "
+        f"({n(efe.loc['lluvia', 'valor_generador'], 0)}). Para distinguir los dos efectos hacen "
+        "falta intervalos con lluvia fuera de la hora punta (aquí solo hay "
+        f"{lluvia_valle}) y registrar todas las variables de contexto; si se omite una variable correlacionada, "
+        "su efecto se carga a las demás.")
+
+    # 7.7 ------------------------------------------------------------------
+    inf.titulo("7.7", "Pregunta 7: cuándo subir el precio y cuándo incentivar", 2)
+    inf.parrafo(
+        f"Se responde en la sección 6: con P(escasez) > {n(X, 2)} se actúa; se sube el precio "
+        f"mientras no sea seguro que ya supera {n(Y, 0)} Bs y se incentiva a los conductores "
+        "cuando sí lo es, manteniendo cada acción al menos 30 minutos. La justificación, el "
+        "barrido de umbrales y los límites están en resultados/pregunta7.md. La sección 7.8 "
+        "muestra cuánto se puede anticipar esa decisión con las predicciones del filtro.")
+
+    # 7.8 ------------------------------------------------------------------
+    inf.titulo("7.8", "Escenario D: valores atípicos y predicción a m pasos", 2)
+    inf.parrafo(
+        "El Escenario D pide evaluar la robustez frente a valores atípicos. Se inyectaron "
+        f"lecturas desviadas en 10 desviaciones en los intervalos {', '.join(map(str, P.ATIPICOS_D))} "
+        "y se comparó el filtro de la Persona 3 con un filtro robusto "
+        "(capa3_kalman/extensiones.py) que descarta una medición si su innovación normalizada "
+        "(NIS) supera el cuantil 99,9 % de la chi-cuadrado (resultados/tablas/kalman_atipicos.csv).")
+    cols = [("sin_atipicos_estandar", "Sin atípicos, estándar"),
+            ("sin_atipicos_robusto", "Sin atípicos, robusto"),
+            ("con_atipicos_estandar", "Con atípicos, estándar"),
+            ("con_atipicos_robusto", "Con atípicos, robusto")]
+    filas = [[etq, n(atip.loc["error_precio", c], 3), n(atip.loc["error_demanda", c], 3),
+              pct(atip.loc["cobertura_precio", c]), n(atip.loc["mediciones_descartadas", c], 2)]
+             for c, etq in cols]
+    inf.tabla("Escenario D: filtro estándar y robusto ante valores atípicos",
+              ["Caso", "Error precio (Bs)", "Error demanda", "Cobertura precio",
+               "Mediciones descartadas"], filas)
+    inf.parrafo(
+        "Tres lecturas atípicas en 60 duplican el error del precio del filtro estándar (de "
+        f"{n(atip.loc['error_precio', 'sin_atipicos_estandar'], 2)} a "
+        f"{n(atip.loc['error_precio', 'con_atipicos_estandar'], 2)} Bs) y bajan su cobertura al "
+        f"{pct(atip.loc['cobertura_precio', 'con_atipicos_estandar'])}. El filtro robusto detecta "
+        f"el {pct(atip.loc['atipicos_detectados', 'con_atipicos_robusto'])} de los atípicos, deja "
+        f"el error en {n(atip.loc['error_precio', 'con_atipicos_robusto'], 2)} Bs y casi no "
+        "descarta mediciones buenas. Los primeros 15 minutos no se someten a la prueba, porque el "
+        "estado inicial está lejos del verdadero y rechazar esas mediciones impediría que el "
+        "filtro se corrija.")
+    inf.parrafo(
+        "El documento pide también predicciones x̂(k+m|k) para anticipar decisiones. Se aplicó "
+        "solo la etapa de predicción m veces desde cada estimación y se comparó con el valor "
+        "verdadero (resultados/tablas/kalman_pronostico.csv).")
+    filas = [[int(m), n(r.minutos, 0), n(r.error_precio, 3), n(r.error_demanda, 3),
+              pct(r.cobertura_precio), pct(r.cobertura_demanda)] for m, r in pron.iterrows()]
+    inf.tabla("Escenario D: predicción a m pasos",
+              ["m", "Minutos", "Error precio (Bs)", "Error demanda", "Cobertura precio",
+               "Cobertura demanda"], filas)
+    inf.parrafo(
+        f"A 5 minutos el error del precio es {n(pron.loc[1, 'error_precio'])} Bs y a 15 minutos "
+        f"{n(pron.loc[3, 'error_precio'])} Bs; desde ahí casi no crece, porque el modelo es "
+        "estable y la predicción converge al equilibrio. Los intervalos de ±2 desviaciones "
+        "mantienen una cobertura de al menos 95 %. En la práctica, la regla de decisión puede "
+        "anticipar unos 10 a 15 minutos; más allá la predicción solo dice hacia qué equilibrio "
+        "va el mercado.")
+
+
+def trabajo_en_equipo(inf):
+    inf.titulo("8.", "Trabajo en equipo")
+    inf.parrafo(
+        "El proyecto se organizó con los cuatro roles del documento del caso. Cada integrante "
+        "lideró una capa, que vive en su propia carpeta del repositorio, y los commits de Git "
+        "identifican al autor de cada parte. La Tabla "
+        f"{inf.n_tabla + 1} reproduce la matriz RACI acordada (R = responsable, C = consultado, "
+        "I = informado).")
+    filas = [["Derivar diferencias", "R", "C", "C", "I"],
+             ["Diseñar DAG", "C", "R", "I", "C"],
+             ["Implementar Kalman", "I", "C", "R", "C"],
+             ["Escenarios y datos", "C", "C", "C", "R"],
+             ["Integración del pipeline", "R", "C", "C", "C"],
+             ["Informe final", "C", "C", "C", "R"]]
+    inf.tabla("Matriz RACI", ["Actividad", "Coord. modelo (P1)", "Bayes (P2)", "Kalman (P3)",
+                              "Decisión y datos (P4)"], filas,
+              fuente="Fuente: Documento del caso de estudio, Cuadro 3")
+    inf.vinetas([
+        "**Carpetas por rol:** capa1_euler/ (Persona 1), capa2_bayes/ (Persona 2), "
+        "capa3_kalman/ (Persona 3) e integracion/ (Persona 4).",
+        "**Entregables cruzados:** la integración usa las funciones de cada capa sin cambiar su "
+        "lógica, de modo que cada integrante ejecuta y prueba el código de los demás.",
+        "**Bitácora de aprendizaje y revisión cruzada:** equipo/bitacora.md registra qué aprendió "
+        "cada integrante de las otras capas y quién revisó y ejecutó cada entregable.",
+    ])
 
 
 # ---------------------------------------------------------------------------
@@ -966,6 +1308,32 @@ def presentacion():
                  "Solo precio: 2,63 Bs"],
                 os.path.join(FIG, "E_kalman_viernes.png"))
     diapositiva("Monte Carlo Bayes → Euler", None, os.path.join(FIG, "montecarlo_bandas.png"))
+    est = me.estabilidad(P.PARAMS)
+    diapositiva("Pregunta 1: sensibilidad",
+                [f"α nominal a {pct(est['alpha_max'] / P.PARAMS['alpha'] - 1)} del límite de "
+                 f"estabilidad (α < {n(est['alpha_max'], 3)})",
+                 "Con α/2: equilibrio en 10 min sin oscilar",
+                 "β y γ mueven p* en sentidos opuestos; la dinámica depende de β + γ",
+                 "Estimar con más precisión α y β"],
+                os.path.join(FIG, "sensibilidad_parametros.png"))
+    nl_fil = tabla_csv("no_lineal_filtros.csv").set_index(["mediciones", "filtro"])
+    diapositiva("Pregunta 4: umbral de tolerancia",
+                ["Cerca de 18 Bs la demanda cae ~10 solicitudes por Bs",
+                 "Con α = 0,1 el precio salta entre 5 y 35 Bs: hay que bajar α",
+                 f"Solo precio: KF lineal {n(nl_fil.loc[('solo precio', 'KF lineal'), 'error_precio'])} Bs, "
+                 f"EKF {n(nl_fil.loc[('solo precio', 'EKF'), 'error_precio'])} Bs, "
+                 f"UKF {n(nl_fil.loc[('solo precio', 'UKF'), 'error_precio'])} Bs",
+                 "EKF suficiente; UKF más robusto al arranque"],
+                os.path.join(FIG, "no_lineal_dinamica.png"))
+    efe = tabla_csv("E_efectos_contexto.csv").set_index("factor")
+    diapositiva("Pregunta 6: lluvia vs hora punta",
+                ["En la red: efectos casi aditivos (interacción ≈ 0,04)",
+                 f"En los datos, diferencia ingenua de la lluvia: "
+                 f"+{n(efe.loc['lluvia', 'diferencia_ingenua'], 1)} solicitudes",
+                 f"Regresión con todos los factores: +{n(efe.loc['lluvia', 'regresion_completa'], 1)} "
+                 f"(generador: +{n(efe.loc['lluvia', 'valor_generador'], 0)})",
+                 "Hace falta lluvia fuera de la hora punta y registrar todo el contexto"],
+                os.path.join(RAIZ, "capa2_bayes", "figuras", "pregunta6.png"))
     diapositiva("Decisión de tarifa (pregunta 7)",
                 [f"INCENTIVAR si P(escasez) > {n(P.UMBRAL_X, 2)} y el límite inferior del precio > "
                  f"{n(P.UMBRAL_Y, 0)} Bs",
@@ -979,7 +1347,7 @@ def presentacion():
                  "La tarifa alta es el indicador observable de escasez",
                  "El bono cuesta ~65 Bs por pasajero retenido: protege al pasajero, no es eficiente",
                  "Datos sintéticos: validan el sistema, no predicen el mercado real",
-                 "Reproducible: pip install -r requirements.txt y los scripts del README"])
+                 "Reproducible: pip install -r requirements.txt y python reproducir.py"])
     ruta = os.path.join(CARPETA, "presentacion.pptx")
     prs.save(ruta)
     return ruta

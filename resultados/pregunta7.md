@@ -18,7 +18,7 @@ En cada intervalo de 5 minutos:
 - **Límite inferior:** es la estimación menos 2 desviaciones (≈95 %). Se usa este límite y no la estimación puntual para que "el precio ya supera Y" tenga una confianza de 97,5 %. Así solo se deja de subir el precio y se paga el bono cuando estamos seguros de que el precio ya es alto. Si se usara la estimación puntual, el ruido haría pagar bonos cuando el precio real todavía está bajo Y.
 - **Permanencia mínima:** cada acción se mantiene al menos 30 minutos (6 intervalos) antes de cambiar.
 
-Implementación: `decision.py` (`decidir`, `decidir_secuencia`, `explicar`). Los umbrales están en `params.py`.
+Implementación: `integracion/decision.py` (`decidir`, `decidir_secuencia`, `explicar`). Los umbrales están en `integracion/params.py`.
 
 ## Cómo se eligieron X e Y
 
@@ -69,6 +69,6 @@ En los tres escenarios la regla atrae pasajeros en vez de expulsarlos: B 32, C 2
 1. **La evaluación es en lazo abierto respecto de la información.** Las decisiones se toman con las estimaciones de Kalman de la trayectoria sin intervenir, y después se simula el efecto. En un sistema real la acción cambiaría las mediciones siguientes.
 2. **Un recargo fijo lo absorbe el precio dinámico.** En el modelo lineal, si el algoritmo de Euler sigue ajustando el precio, un recargo fijo δ baja el precio de equilibrio de mercado en δ. El pasajero termina pagando lo mismo en equilibrio, y SUBIR solo actúa en el transitorio. El bono, en cambio, mueve el equilibrio: p* baja γb/(β+γ) = 0,86 Bs y salen β·0,86 ≈ 1,7 viajes más por intervalo.
 3. **El parpadeo.** Sin permanencia mínima, la acción cambiaba 20 veces en 60 intervalos en C y 179 veces en E. Con la dinámica oscilante (r = −0,75), cada cambio genera un transitorio y la demanda insatisfecha **subía** (C: 80 → 106). Con 30 minutos de permanencia C queda en 66. **En E la demanda insatisfecha todavía sube un 15 %** (1 593 → 1 831), porque los contextos cambian rápido y las acciones siguen generando transitorios. Una regla de producción necesitaría una acción gradual (rampa) en lugar de un escalón.
-4. **El bono es caro.** Se paga en todos los viajes del intervalo para retener pocos pasajeros: unos 65 Bs por pasajero retenido. Con estos supuestos, incentivar solo se justifica para proteger al pasajero de precios altos, no por eficiencia. El monto del bono (2 Bs) y el del recargo (2 Bs) son supuestos (`params.py`).
+4. **El bono es caro.** Se paga en todos los viajes del intervalo para retener pocos pasajeros: unos 65 Bs por pasajero retenido. Con estos supuestos, incentivar solo se justifica para proteger al pasajero de precios altos, no por eficiencia. El monto del bono (2 Bs) y el del recargo (2 Bs) son supuestos (`integracion/params.py`).
 5. **La P(escasez) de la red depende de supuestos expertos** (Persona 2) o de una calibración con datos sintéticos que usa `tarifa_alta` como proxy de escasez. La escasez D > S casi no depende del contexto en los datos (≈16 % en todos), porque el precio equilibra el mercado.
-6. **Ningún dato es real.** Con datos de una plataforma habría que recalibrar X e Y con el mismo script (`python decision.py`).
+6. **Ningún dato es real.** Con datos de una plataforma habría que recalibrar X e Y con el mismo script (`python -m integracion.decision`).

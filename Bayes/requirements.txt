@@ -1,2 +1,0 @@
-matplotlib
-pgmpy  # opcional, solo para verificar
