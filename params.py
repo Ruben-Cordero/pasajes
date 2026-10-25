@@ -98,9 +98,10 @@ TARIFA_ALTA = 1.3 * PARAMS["p_ref"]   # 13 Bs, igual que datos/preparar.py
 # Regla de decision (pregunta 7). Valores elegidos con el barrido de
 # decision.py (ver resultados/pregunta7.md).
 # ---------------------------------------------------------------------------
-UMBRAL_X = 0.55          # P(escasez) a partir de la cual se actua
+UMBRAL_X = 0.30          # P(escasez) a partir de la cual se actua
 UMBRAL_Y = TARIFA_ALTA   # precio (Bs) a partir del cual subir mas expulsa pasajeros
 NIVEL_CONFIANZA_Z = 2.0  # intervalo = estimacion +- 2 desviaciones (~95 %)
+PERMANENCIA_MIN = 6      # intervalos (30 min) que una accion se mantiene antes de cambiar
 
 # Efecto supuesto de cada accion (para evaluar la regla en simulacion)
 RECARGO_SUBIR = 2.0      # Bs que se suman al precio al SUBIR
