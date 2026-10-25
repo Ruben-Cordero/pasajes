@@ -1,0 +1,28 @@
+periodo_inicio,periodo_fin,estacion,variable,valor,unidad,normal_1991_2020,record_historico,origen_valor,fuente,documento,pagina
+2026-01-01,2026-01-31,cochabamba,precipitacion_max_24h,21.9,mm,,78.0,texto_grafico,senamhi,BOL-RC-N01-2026,Grafico 17
+2026-01-01,2026-01-31,cochabamba_sarco,precipitacion_max_24h,32.0,mm,,50.6,texto_grafico,senamhi,BOL-RC-N01-2026,Grafico 17
+2026-01-01,2026-01-31,cochabamba,precipitacion_acumulada,101,mm,101,,grafico_aprox,senamhi,BOL-RC-N01-2026,Grafico 16
+2026-01-01,2026-01-31,cochabamba_sarco,precipitacion_acumulada,137,mm,115,,grafico_aprox,senamhi,BOL-RC-N01-2026,Grafico 16
+2026-01-01,2026-01-31,cochabamba,dias_con_lluvia,21,dias,,,grafico_aprox,senamhi,BOL-RC-N01-2026,Grafico 18
+2026-01-01,2026-01-31,cochabamba_sarco,dias_con_lluvia,22,dias,,,grafico_aprox,senamhi,BOL-RC-N01-2026,Grafico 18
+2025-11-01,2026-01-31,cochabamba_sarco,tmin_media_trimestral,,c,,,texto,senamhi,BOL-RC-N01-2026,Grafico 37
+2023-12-01,2023-12-31,cochabamba_aeropuerto,precipitacion_acumulada,55,mm,80,,grafico_aprox,senamhi,BOL-PC-N01-2024,Ilustracion 5
+2023-12-01,2023-12-31,cochabamba_sarco,precipitacion_acumulada,35,mm,80,,grafico_aprox,senamhi,BOL-PC-N01-2024,Ilustracion 5
+2023-12-01,2023-12-31,chimore,precipitacion_acumulada,430,mm,235,,grafico_aprox,senamhi,BOL-PC-N01-2024,Ilustracion 5
+2023-12-01,2023-12-31,cochabamba_aeropuerto,tmax_media,29.7,c,27.5,,tabla,senamhi,BOL-PC-N01-2024,Tabla 2
+2023-12-01,2023-12-31,cochabamba_sarco,tmax_media,31.8,c,28.9,,tabla,senamhi,BOL-PC-N01-2024,Tabla 2
+2023-12-01,2023-12-31,chimore,tmax_media,34.1,c,30.8,,tabla,senamhi,BOL-PC-N01-2024,Tabla 2
+2023-12-01,2023-12-31,cochabamba_aeropuerto,tmin_media,15.1,c,12.8,,tabla,senamhi,BOL-PC-N01-2024,Tabla 4
+2023-12-01,2023-12-31,cochabamba_sarco,tmin_media,16.1,c,14.3,,tabla,senamhi,BOL-PC-N01-2024,Tabla 4
+2023-12-01,2023-12-31,chimore,tmin_media,23.7,c,22.6,,tabla,senamhi,BOL-PC-N01-2024,Tabla 4
+2023-12-01,2023-12-31,cochabamba_aeropuerto,tmax_absoluta,34.2,c,,35.0,tabla,senamhi,BOL-PC-N01-2024,Tabla 1
+2023-12-01,2023-12-31,cochabamba_sarco,tmax_absoluta,38.3,c,,37.0,tabla,senamhi,BOL-PC-N01-2024,Tabla 1
+2023-12-01,2023-12-31,chimore,tmax_absoluta,37.8,c,,37.6,tabla,senamhi,BOL-PC-N01-2024,Tabla 1
+2023-12-01,2023-12-31,cochabamba_aeropuerto,tmin_absoluta,11.8,c,,,tabla,senamhi,BOL-PC-N01-2024,Tabla 3
+2023-12-01,2023-12-31,cochabamba_sarco,tmin_absoluta,12.2,c,,8.0,tabla,senamhi,BOL-PC-N01-2024,Tabla 3
+2023-12-01,2023-12-31,chimore,tmin_absoluta,21.5,c,,20.3,tabla,senamhi,BOL-PC-N01-2024,Tabla 3
+2026-09-01,2026-09-30,cochabamba_aeropuerto,precipitacion_acumulada,18,mm,20,,supuesto,supuesto_sintetico,SIN_DOCUMENTO,
+2026-09-01,2026-09-30,cochabamba_aeropuerto,dias_con_lluvia,4,dias,,,supuesto,supuesto_sintetico,SIN_DOCUMENTO,
+2026-10-01,2026-10-31,cochabamba_aeropuerto,precipitacion_acumulada,38,mm,35,,supuesto,supuesto_sintetico,SIN_DOCUMENTO,
+2026-10-01,2026-10-31,cochabamba_aeropuerto,dias_con_lluvia,9,dias,,,supuesto,supuesto_sintetico,SIN_DOCUMENTO,
+2026-10-01,2026-10-31,cochabamba_aeropuerto,precipitacion_max_24h,14.0,mm,,,supuesto,supuesto_sintetico,SIN_DOCUMENTO,

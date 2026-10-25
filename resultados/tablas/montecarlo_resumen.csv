@@ -1,0 +1,9 @@
+red,contexto,n_muestras,P_escasez_red,frac_intervalos_escasez_sim,D0_esperado,S0_esperado,precio_medio,p_eq_mediana,p_eq_p5,p_eq_p95,precio_final_p5,precio_final_mediana,precio_final_p95,P_precio_final_mayor_tarifa_alta
+experta,valle_seco,500,0.2019,0.0476,51.6,47.614,9.1057,9.0,7.0,13.0,7.0,9.0,13.0,0.072
+experta,punta_seca,500,0.3881,0.0463,56.8,47.0942,10.6584,9.8571,7.0,14.1429,7.0,9.8571,14.1429,0.232
+experta,punta_lluvia,500,0.6178,0.0601,59.56,45.4473,12.067,13.0,9.0,14.1429,9.0,13.0,14.1429,0.504
+experta,viernes_19h_lluvia_evento,500,0.6907,0.0713,62.04,45.4473,12.7184,13.0,9.0,14.1429,9.0,13.0,14.1429,0.678
+calibrada,valle_seco,500,0.0366,0.046,49.9822,47.4049,8.541,9.0,7.0,11.0,7.0,9.0,11.0,0.0
+calibrada,punta_seca,500,0.5685,0.0747,63.3484,45.0014,13.1395,14.1429,9.8571,14.1429,9.8571,14.1429,14.1429,0.75
+calibrada,punta_lluvia,500,0.5978,0.0758,62.5822,43.8829,13.2878,14.1429,9.8571,14.1429,9.8571,14.1429,14.1429,0.792
+calibrada,viernes_19h_lluvia_evento,500,0.6474,0.0786,63.5905,43.8829,13.5363,14.1429,11.0,14.1429,11.0,14.1429,14.1429,0.858

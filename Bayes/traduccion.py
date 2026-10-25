@@ -29,10 +29,19 @@ except ImportError:
 # Demanda alta = 100 (Escenario B, hora punta).
 # Oferta baja  = 30  (Escenario C, lluvia).
 # Demanda baja = 30 y Oferta alta = 70: supuestos simetricos.
-# PENDIENTE (Persona 4): calibrar con el promedio de solicitudes y de
-# vehiculos observados en los intervalos de cada categoria.
-VALORES_D0 = {"baja": 30.0, "media": 50.0, "alta": 100.0}
-VALORES_S0 = {"baja": 30.0, "media": 50.0, "alta": 70.0}
+# CALIBRADO (Persona 4) con datos/procesado/escenario_e.csv, que son datos
+# SINTETICOS (ver datos/README.md, secciones 5 a 7). Cada valor es el
+# promedio, dentro de su categoria, de la demanda y la oferta a precio de
+# referencia: D0_hat = solicitudes - beta*(p_ref - precio) y
+# S0_hat = vehiculos - gamma*(precio - p_costo). Las categorias salen de los
+# terciles de D0_hat (50, 58) y S0_hat (45.5, 48). Detalle y comparacion con
+# los valores orientativos del README de datos: escenario_e.py y
+# resultados/tablas/E_calibracion_traduccion.csv.
+# Valores anteriores (supuestos): D0 = 30/50/100, S0 = 30/50/70. Los
+# escenarios B (D0=100) y C (S0=30) del documento siguen definidos aparte en
+# params.py: son choques mas fuertes que cualquier contexto de los datos.
+VALORES_D0 = {"baja": 47.0, "media": 54.0, "alta": 65.0}
+VALORES_S0 = {"baja": 43.0, "media": 47.0, "alta": 50.0}
 
 # Parametros nominales del documento (Escenario A); solo se usan para la
 # vista previa del precio de equilibrio. El modelo oficial es el de Persona 1.

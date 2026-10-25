@@ -1,0 +1,4 @@
+escenario,nombre,p_eq_teorico_base,p_eq_teorico_ventana,precio_equilibrio,precio_medio,precio_max,precio_min,tiempo_hasta_equilibrio_min,intervalos_con_escasez,servicios_realizados,tiempo_equilibrio_ventana_min,precio_medio_ventana
+A,Base (equilibrio),7.8571,7.8571,7.8571,7.8776,10.0,6.25,60.0,4,3241.8367,,
+B,Hora punta,7.8571,22.1429,7.8571,13.6665,32.8062,5.0,250.0,16,3611.104,75.0,21.8047
+C,Lluvia,7.8571,13.5714,7.8571,10.1768,17.8062,5.0,250.0,15,2898.3747,65.0,13.4371
