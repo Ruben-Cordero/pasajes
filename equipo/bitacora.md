@@ -30,9 +30,19 @@ Ningún entregable está terminado hasta que otro integrante lo ejecutó y lo re
 Cada integrante anota, en pocas líneas, qué aprendió de las **otras tres** capas. Sirve para preparar la defensa oral individual (regla 5): cualquiera debe poder explicar cualquier sección.
 
 ### Persona 1 (Euler)
-- Red bayesiana:
-- Filtro de Kalman:
-- Escenarios y decisión:
+- Red bayesiana: Aprendí que la red representa el contexto mediante
+  probabilidades de demanda, oferta y escasez. La función de traducción
+  convierte esas inferencias en los valores `D0` y `S0` que usa Euler; por
+  eso la capa bayesiana no calcula directamente el precio.
+- Filtro de Kalman: Aprendí que el filtro recibe la dinámica de Euler en forma
+  de espacio de estados, con `x_k = (p_k, D_k)` y la matriz `F`. Euler genera
+  la trayectoria verdadera y el filtro estima el precio y la demanda cuando
+  las mediciones tienen ruido.
+- Escenarios y decisión: Aprendí que los escenarios A--C modifican `D0` o
+  `S0` por intervalos y permiten comparar el equilibrio teórico con la
+  simulación. La capa de decisión usa la probabilidad de escasez de Bayes y
+  el precio estimado por Kalman para elegir entre mantener, subir o
+  incentivar.
 
 ### Persona 2 (Bayes)
 - Modelo de Euler:
@@ -48,5 +58,4 @@ Cada integrante anota, en pocas líneas, qué aprendió de las **otras tres** ca
 - Modelo de Euler:
 - Red bayesiana:
 - Filtro de Kalman:
-
 
